@@ -1,0 +1,100 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Micorservice Play App</title>
+</head>
+
+<body>
+  <form method="post" id="sec-10-form" class="sec-10-form">
+     <input type="submit" value="Last 10 sec." name="submit"><br>
+  </form>
+
+  <form method="post" id="min-10-form" class="min-10-form">
+     <input type="submit" value="Last 10 min." name="submit"><br>
+  </form>
+
+  <form method="post" id="hour-1-form" class="hour-1-form">
+     <input type="submit" value="Last hour." name="submit"><br>
+  </form>
+
+  <h2>Recived</h2>
+  <div class="json_response"></div>
+</body>
+
+
+<script type="text/javascript">
+const formToFormData = elements => [].reduce.call(elements, (data, element) => {
+  
+  data[element.name] = element.value;
+  return data;
+
+}, {});
+
+function requestData(fromTime, toTime) {
+  var url = "http://localhost:10082/micro/cdr/get/"+fromTime+"/"+toTime;
+  //var url = "http://172.27.13.99:10082/micro/cdr/get/"+fromTime+"/"+toTime;
+
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("GET", url);
+  xmlhttp.onreadystatechange = function() {
+    const responseContainer = document.getElementsByClassName('json_response')[0];
+    responseContainer.textContent = this.responseText;
+  };
+  //xmlhttp.setRequestHeader("Content-Type", "application/json");
+  xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xmlhttp.send();
+//  xmlhttp.send(urlEncodedData);
+//  xmlhttp.send(params);
+};
+
+const handleForm10Submit = event => {
+  const jResponseContainer = document.getElementsByClassName('json_response')[0];
+  jResponseContainer.textContent = "";
+
+  // Stop the form from submitting since we’re handling that with AJAX.
+  event.preventDefault();
+  
+  var now = new Date();
+  var toTime = Math.round(now.getTime()/1000);
+  var fromTime = toTime - 10;
+  requestData(fromTime, toTime);
+};
+
+const handleForm600Submit = event => {
+  const jResponseContainer = document.getElementsByClassName('json_response')[0];
+  jResponseContainer.textContent = "";
+
+  // Stop the form from submitting since we’re handling that with AJAX.
+  event.preventDefault();
+  
+  var now = new Date();
+  var toTime = Math.round(now.getTime()/1000);
+  var fromTime = toTime - 600;
+  requestData(fromTime, toTime);
+};
+
+const handleForm2400Submit = event => {
+  const jResponseContainer = document.getElementsByClassName('json_response')[0];
+  jResponseContainer.textContent = "";
+
+  // Stop the form from submitting since we’re handling that with AJAX.
+  event.preventDefault();
+  
+  var now = new Date();
+  var toTime = Math.round(now.getTime()/1000);
+  var fromTime = toTime - 2400;
+  requestData(fromTime, toTime);
+};
+
+const form1 = document.getElementsByClassName('sec-10-form')[0];
+form1.addEventListener('submit', handleForm10Submit);
+const form2 = document.getElementsByClassName('min-10-form')[0];
+form2.addEventListener('submit', handleForm600Submit);
+const form3 = document.getElementsByClassName('hour-1-form')[0];
+form3.addEventListener('submit', handleForm2400Submit);
+
+</script>
+
+
+
+</html>
