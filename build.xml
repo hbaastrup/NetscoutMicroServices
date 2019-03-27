@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MicroServices" default="deploy" basedir=".">
+	<property name="version" value="1.0.0" />
+
+	<property name="build.dir" location="${basedir}/bin" />
+	<property name="build.lib.dir" location="${basedir}/lib" />
+	
+	<property name="data.dir" location="${basedir}/data" />
+
+	<property name="dist.dir" location="${basedir}/target" />
+	<property name="tac.dist.jar" value="MicroServices-tac.${version}.jar" />
+	<property name="subscriber.dist.jar" value="MicroServices-subscriber.${version}.jar" />
+	<property name="cdr.dist.jar" value="MicroServices-cdr.${version}.jar" />
+
+	<property name="tac.manifest.file" value="${basedir}/manifest-tac.mf" />
+	<property name="subscriber.manifest.file" value="${basedir}/manifest-subscriber.mf" />
+	<property name="cdr.manifest.file" value="${basedir}/manifest-cdr.mf" />
+
+	<property name="src.dir" location="${basedir}/src/main/java" />
+
+ 	<property name="javac.source" value="1.8" />
+	<property name="javac.target" value="1.8" />
+	<property name="build.max.memmemory" value="512m" />
+
+	<target name="init" description="Init the build">
+		<path id="build.classpath">
+			<pathelement path="${build.lib.dir}/HdrHistogram-2.1.11.jar" />
+			<pathelement path="${build.lib.dir}/hystrix-core-1.5.18.jar" />
+			<pathelement path="${build.lib.dir}/hystrix-metrics-event-stream-1.5.18.jar" />
+			<pathelement path="${build.lib.dir}/jackson-annotations-2.9.8.jar" />
+			<pathelement path="${build.lib.dir}/jackson-core-2.9.8.jar" />
+			<pathelement path="${build.lib.dir}/jackson-databind-2.9.8.jar" />
+			<pathelement path="${build.lib.dir}/javalin-2.7.0.jar" />
+			<pathelement path="${build.lib.dir}/javalin-2.7.0-sources.jar" />
+			<pathelement path="${build.lib.dir}/jetty-http-9.4.15.v20190215.jar" />
+			<pathelement path="${build.lib.dir}/jetty-io-9.4.15.v20190215.jar" />
+			<pathelement path="${build.lib.dir}/jetty-security-9.4.15.v20190215.jar" />
+			<pathelement path="${build.lib.dir}/jetty-server-9.4.15.v20190215.jar" />
+			<pathelement path="${build.lib.dir}/jetty-servlet-9.4.15.v20190215.jar" />
+			<pathelement path="${build.lib.dir}/jetty-util-9.4.15.v20190215.jar" />
+			<pathelement path="${build.lib.dir}/kotlin-stdlib-1.3.21.jar" />
+			<pathelement path="${build.lib.dir}/kotlin-stdlib-common-1.3.21.jar" />
+			<pathelement path="${build.lib.dir}/rxjava-1.3.8.jar" />
+			<pathelement path="${build.lib.dir}/servlet-api.jar" />
+			<pathelement path="${build.lib.dir}/slf4j-api-1.7.26.jar" />
+			<pathelement path="${build.lib.dir}/slf4j-simple-1.7.26.jar" />
+			<pathelement path="${build.lib.dir}/websocket-api-9.4.15.v20190215.jar" />
+			<pathelement path="${build.lib.dir}/websocket-common-9.4.15.v20190215.jar" />
+			<pathelement path="${build.lib.dir}/websocket-server-9.4.15.v20190215.jar" />
+			<pathelement path="${build.lib.dir}/websocket-servlet-9.4.15.v20190215.jar" />
+		</path>
+	</target>
+	
+	<target name="delete" depends="init" description="Clean-up before a fresh build">
+		<delete dir="${build.dir}" failonerror="false" />
+		<mkdir dir="${build.dir}" />
+		<delete dir="${dist.dir}" failonerror="false" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<target name="compile" depends="delete" description="Compile the source ">
+		<mkdir dir="${build.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" fork="yes"
+		       memoryMaximumSize="${build.max.memmemory}" verbose="yes" 
+			   source="${javac.source}" target="${javac.target}"
+			   debug="true">
+			<classpath refid="build.classpath" />
+		</javac>
+	</target>
+
+	<target name="copy" depends="compile" description="Copy files for JAR" >
+		<copy todir="${dist.dir}/lib">
+			<fileset file="${build.lib.dir}/**.*jar" />
+		</copy>
+		<copy todir="${dist.dir}/data">
+			<fileset file="${data.dir}/**.*" />
+		</copy>
+	</target>
+
+	<target name="tac-jar" depends="copy" description="Build the JAR file" >
+		<jar jarfile="${dist.dir}/${tac.dist.jar}" manifest="${tac.manifest.file}" >
+			<fileset dir="${build.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="subscriber-jar" depends="tac-jar" description="Build the JAR file" >
+		<jar jarfile="${dist.dir}/${subscriber.dist.jar}" manifest="${subscriber.manifest.file}" >
+			<fileset dir="${build.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="cdr-jar" depends="subscriber-jar" description="Build the JAR file" >
+		<jar jarfile="${dist.dir}/${cdr.dist.jar}" manifest="${cdr.manifest.file}" >
+			<fileset dir="${build.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="deploy" depends="cdr-jar" />
+</project>
+
