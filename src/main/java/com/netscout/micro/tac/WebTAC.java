@@ -13,6 +13,7 @@ public class WebTAC {
 		this.cache = cache;
 		app = Javalin.create();
 		app.enableRouteOverview("/path"); // render a HTML page showing all mapped routes
+		app.enableStaticFiles(".");
 		app.start(port);
 		
 		app.get("/micro/tac/get/:tac", ctx -> {

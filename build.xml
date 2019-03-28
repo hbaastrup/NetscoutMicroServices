@@ -75,6 +75,9 @@
 		<copy todir="${dist.dir}/data">
 			<fileset file="${data.dir}/**.*" />
 		</copy>
+		<copy todir="${dist.dir}">
+			<fileset file="index.html" />
+		</copy>
 	</target>
 
 	<target name="tac-jar" depends="copy" description="Build the JAR file" >

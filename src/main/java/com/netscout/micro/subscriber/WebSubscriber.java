@@ -13,15 +13,18 @@ public class WebSubscriber {
 		
 		app = Javalin.create();
 		app.enableRouteOverview("/path"); // render a HTML page showing all mapped routes
+		app.enableStaticFiles(".");
 		app.start(port);
 		
 		app.get("/micro/sub/get/:number", ctx -> {
 			Subscriber p = controller.getPhone(ctx.pathParam("number"));
+			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json(p);
 		});
 		
 		app.get("/micro/sub/all", ctx -> {
 			List<Long> all = controller.getAllPhones();
+			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json(all);
 		});
 	}

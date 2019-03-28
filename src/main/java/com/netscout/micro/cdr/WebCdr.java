@@ -1,5 +1,6 @@
 package com.netscout.micro.cdr;
 
+import java.io.File;
 import java.util.List;
 
 import hba.tuples.Pair;
@@ -14,15 +15,18 @@ public class WebCdr {
 		
 		app = Javalin.create();
 		app.enableRouteOverview("/path"); // render a HTML page showing all mapped routes
+		app.enableStaticFiles(".");
 		app.start(port);
 		
 		app.get("/micro/cdr/get/:begin/:end", ctx -> {
 			List<CDR> cdrs = database.get(ctx.pathParam("begin"), ctx.pathParam("end"));
+			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json(cdrs);
 		});
 		
 		app.get("/micro/cdr/get/time", ctx -> {
 			Pair<Integer, Integer> minMax = database.getMinMaxTime();
+			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json("{minTime:"+minMax.getValue0()+", maxTime:"+minMax.getValue1()+"}");
 		});
 	}
