@@ -1,4 +1,4 @@
-package com.netscout.micro.subscriber;
+package playground.micro.subscriber;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.netscout.micro.cdr;
+package playground.micro.cdr;
 
 public class CDR {
 	public enum STATUS {OK, ERROR};

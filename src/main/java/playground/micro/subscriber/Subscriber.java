@@ -1,10 +1,10 @@
-package com.netscout.micro.subscriber;
+package playground.micro.subscriber;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.netscout.micro.tac.TAC;
+import playground.micro.tac.TAC;
 
 public class Subscriber {
 	private long number;

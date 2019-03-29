@@ -1,4 +1,4 @@
-package com.netscout.micro.cdr;
+package playground.micro.cdr;
 
 import java.io.BufferedReader;
 import java.io.IOException;

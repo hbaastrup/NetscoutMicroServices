@@ -1,4 +1,4 @@
-package com.netscout.micro.cdr;
+package playground.micro.cdr;
 
 import java.util.ArrayList;
 import java.util.List;

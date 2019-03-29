@@ -1,4 +1,4 @@
-package com.netscout.micro.subscriber;
+package playground.micro.subscriber;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -7,7 +7,7 @@ import java.net.URL;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
-import com.netscout.micro.tac.TAC;
+import playground.micro.tac.TAC;
 
 public class TacGetCommand extends HystrixCommand<TAC> {
 	static final String QUERY = "/micro/tac/get/";

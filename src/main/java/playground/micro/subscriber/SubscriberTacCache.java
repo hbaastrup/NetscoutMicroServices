@@ -1,8 +1,8 @@
-package com.netscout.micro.subscriber;
+package playground.micro.subscriber;
 
 import java.util.HashMap;
 
-import com.netscout.micro.tac.TAC;
+import playground.micro.tac.TAC;
 
 public enum SubscriberTacCache {
 	INSTANCE;

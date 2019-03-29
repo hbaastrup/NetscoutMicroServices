@@ -1,4 +1,4 @@
-package com.netscout.micro.subscriber;
+package playground.micro.subscriber;
 
 import java.io.IOException;
 import java.util.List;

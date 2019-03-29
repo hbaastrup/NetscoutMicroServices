@@ -1,4 +1,4 @@
-package com.netscout.micro.subscriber;
+package playground.micro.subscriber;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
-import com.netscout.micro.tac.TAC;
+import playground.micro.tac.TAC;
 
 //See https://github.com/Netflix/Hystrix/wiki/How-it-Works#flow-chart
 public class TacGetterDelegate {
