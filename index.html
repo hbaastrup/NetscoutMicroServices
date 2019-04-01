@@ -1,7 +1,22 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Micorservice Play App</title>
+    <title>Microservice Play App</title>
+   <style type="text/css">
+		.my-table
+		{
+			border: 1px solid black;
+		}
+		.my-table th
+		{
+			border: 1px solid black;
+			background-color: #EFEFEF;
+		}
+		.my-table tr td 
+		{
+			border: 1px solid black;
+		}
+	</style>
 </head>
 
 <body>
@@ -17,12 +32,67 @@
      <input type="submit" value="Last hour." name="submit"><br>
   </form>
 
-  <h2>Recived</h2>
-  <div class="json_response"></div>
+  <h2>Received</h2>
+  <div id="div-html-table"></div>
 </body>
 
 
 <script type="text/javascript">
+var HTTPSERVER = "localhost";
+
+//*** class definition ***
+function HtmlTable(id, cssClass, cssInline) {
+	//constructor
+	this.id = id;
+	this.cssClass = cssClass;
+	this.cssInline = cssInline;
+	this.htmlOutput = "<table id=\"" + this.id + "\" class=\"" + this.cssClass + "\" style=\"" + this.cssInline + "\">";
+}
+     
+
+//public method for adding a row
+HtmlTable.prototype.AddRowHeader = function(arrCols, arrCssCols) {
+	this.htmlOutput += "<tr>";
+	for(var i = 0; i < arrCols.length; i++) {
+		if (arrCssCols && arrCssCols[i].length > 0) {
+			this.htmlOutput += "<th style=\"" + arrCssCols[i] + "\">" + arrCols[i] + "</th>";
+		}
+		else {
+			this.htmlOutput += "<th>" + arrCols[i] + "</th>";
+		}
+	}
+	this.htmlOutput += "</tr>";                
+}
+
+HtmlTable.prototype.AddRow = function(arrCols, arrCssRow) {
+	if (arrCssRow && arrCssRow.length > 0) {
+		this.htmlOutput += "<tr class=\"" + arrCssRow + "\">";
+	}
+	else {
+		this.htmlOutput += "<tr>";
+	}                
+	for(var i = 0; i < arrCols.length; i++) {
+		if(i == arrCols.length - 1) {
+			this.htmlOutput += "<td onclick=\"requestSubscriber(" + arrCols[i] + ")\" style=\"cursor: pointer;\">" + arrCols[i] + "</td>";
+		} else {
+			this.htmlOutput += "<td>" + arrCols[i] + "</td>";
+		}
+	}
+	this.htmlOutput += "</tr>";                
+}
+
+//public method for getting the resulting html
+HtmlTable.prototype.GetHtml = function() {
+	return this.htmlOutput + "</table>";
+}
+
+function getCurrentTimeFromStamp(timestamp) {
+    var d = new Date(timestamp);
+    timeStampCon = d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear() + " " + d.getHours() + ':' + d.getMinutes() + '.' + d.getMilliseconds();
+
+    return timeStampCon;
+};
+
 const formToFormData = elements => [].reduce.call(elements, (data, element) => {
   
   data[element.name] = element.value;
@@ -30,15 +100,68 @@ const formToFormData = elements => [].reduce.call(elements, (data, element) => {
 
 }, {});
 
+function fillHTMLSubscriberTable(jsonResponse) {
+    var myTable = new HtmlTable("html-table-id", "my-table", "width: 80%");
+    
+	var rows = JSON.parse(jsonResponse);
+	
+	var riga = new Array("Subscriber", "TAC", "Brand", "Model", "Model Type");
+    myTable.AddRowHeader(riga, "");
+	
+	var row = [];
+	row[0] = rows.number;
+	row[1] = rows.tac;
+	row[2] = rows.info.brand;
+	row[3] = rows.info.model;
+	row[4] = rows.info.type;
+	myTable.AddRow(row);
+	
+	document.getElementById('div-html-table').innerHTML = myTable.GetHtml();   
+}
+
+function fillHTMLXDRsTable(jsonResponse) {
+    var myTable = new HtmlTable("html-table-id", "my-table", "width: 80%");
+ 
+	var rows = JSON.parse(jsonResponse);
+	
+	var riga = new Array("Begin Time", "End Time", "Subscriber");
+    myTable.AddRowHeader(riga, "");
+	
+	for (index in rows) {
+		var row = [];
+		row[0] = getCurrentTimeFromStamp(rows[index].beginTime);
+		row[1] = getCurrentTimeFromStamp(rows[index].endTime);
+		row[2] = rows[index].subscriber;
+		myTable.AddRow(row);
+	}
+	
+	document.getElementById('div-html-table').innerHTML = myTable.GetHtml();   
+}
+
+function emptyHTMLTable() {
+    document.getElementById('div-html-table').innerHTML = '<table/>';  
+}
+
+function requestSubscriber(subscriber) {
+	
+	  var url = "http://" + HTTPSERVER + ":10081/micro/sub/get/"+subscriber;
+
+	  var xmlhttp = new XMLHttpRequest();
+	  xmlhttp.open("GET", url);
+	  xmlhttp.onreadystatechange = function() {
+		fillHTMLSubscriberTable(this.responseText);
+	  };
+	  xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	  xmlhttp.send();
+}
+
 function requestData(fromTime, toTime) {
-  var url = "http://localhost:10082/micro/cdr/get/"+fromTime+"/"+toTime;
-  //var url = "http://172.27.13.99:10082/micro/cdr/get/"+fromTime+"/"+toTime;
+  var url = "http://" + HTTPSERVER + ":10082/micro/cdr/get/"+fromTime+"/"+toTime;
 
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.open("GET", url);
   xmlhttp.onreadystatechange = function() {
-    const responseContainer = document.getElementsByClassName('json_response')[0];
-    responseContainer.textContent = this.responseText;
+	fillHTMLXDRsTable(this.responseText);
   };
   //xmlhttp.setRequestHeader("Content-Type", "application/json");
   xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -48,8 +171,7 @@ function requestData(fromTime, toTime) {
 };
 
 const handleForm10Submit = event => {
-  const jResponseContainer = document.getElementsByClassName('json_response')[0];
-  jResponseContainer.textContent = "";
+  emptyHTMLTable();
 
   // Stop the form from submitting since we’re handling that with AJAX.
   event.preventDefault();
@@ -61,8 +183,7 @@ const handleForm10Submit = event => {
 };
 
 const handleForm600Submit = event => {
-  const jResponseContainer = document.getElementsByClassName('json_response')[0];
-  jResponseContainer.textContent = "";
+  emptyHTMLTable();
 
   // Stop the form from submitting since we’re handling that with AJAX.
   event.preventDefault();
@@ -74,8 +195,7 @@ const handleForm600Submit = event => {
 };
 
 const handleForm2400Submit = event => {
-  const jResponseContainer = document.getElementsByClassName('json_response')[0];
-  jResponseContainer.textContent = "";
+  emptyHTMLTable();
 
   // Stop the form from submitting since we’re handling that with AJAX.
   event.preventDefault();
@@ -92,6 +212,8 @@ const form2 = document.getElementsByClassName('min-10-form')[0];
 form2.addEventListener('submit', handleForm600Submit);
 const form3 = document.getElementsByClassName('hour-1-form')[0];
 form3.addEventListener('submit', handleForm2400Submit);
+
+ 
 
 </script>
 
