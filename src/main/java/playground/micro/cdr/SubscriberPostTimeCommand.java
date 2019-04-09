@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
 import playground.micro.models.Subscriber;
+import playground.micro.models.SubscriberTimeHolder;
 
 public class SubscriberPostTimeCommand extends HystrixCommand<Subscriber> {
 	static final String QUERY = "/micro/sub/time";
@@ -45,7 +46,7 @@ public class SubscriberPostTimeCommand extends HystrixCommand<Subscriber> {
 	
 	@Override
 	public Subscriber getFallback() {
-		//TODO cache values
+		SubscriberTimeCache.INSTANCE.add(new SubscriberTimeHolder(subscriber, time));
 		return null;
 	}
 

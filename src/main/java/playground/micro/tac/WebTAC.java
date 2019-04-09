@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.javalin.Javalin;
 import playground.micro.models.TAC;
+import playground.micro.models.TACArray;
 
 public class WebTAC {
 	Javalin app;

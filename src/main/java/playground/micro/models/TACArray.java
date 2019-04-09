@@ -1,4 +1,4 @@
-package playground.micro.tac;
+package playground.micro.models;
 
 import java.util.List;
 

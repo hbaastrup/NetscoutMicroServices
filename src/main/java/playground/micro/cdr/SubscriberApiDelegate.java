@@ -15,7 +15,6 @@ import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
 import playground.micro.models.Subscriber;
-import playground.micro.models.TAC;
 
 //See https://github.com/Netflix/Hystrix/wiki/How-it-Works#flow-chart
 public class SubscriberApiDelegate {

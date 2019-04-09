@@ -1,11 +1,11 @@
-package playground.micro.cdr;
+package playground.micro.models;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import playground.micro.models.CDR;
 
-public class CdrBucket {
+public class CDRBucket {
 	ArrayList<CDR> cdrs = new ArrayList<>();
 	
 	public void add(CDR cdr) {

@@ -1,10 +1,13 @@
 package playground.micro.cdr;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import playground.micro.models.CDR;
+import playground.micro.models.Subscriber;
+import playground.micro.models.SubscriberTimeHolder;
 
 public class CdrProducer implements Runnable {
 	CdrDatabase database;
@@ -15,6 +18,7 @@ public class CdrProducer implements Runnable {
 	
 	Random rand = new Random();
 	long standardSleepTime = 1000;
+	long actualAverageSleepTime = standardSleepTime;
 	int variationSleepTime = 200;
 	long standardDurationTime = 120000;
 	int variationDurationTime = 60000;
@@ -63,7 +67,7 @@ public class CdrProducer implements Runnable {
 	public void run() {
 		running = true;
 		while (running) {
-			long nextSleep = standardSleepTime + variationSleepTime - rand.nextInt(2*variationSleepTime);
+			long nextSleep = actualAverageSleepTime + variationSleepTime - rand.nextInt(2*variationSleepTime);
 			try {
 				Thread.sleep(nextSleep);
 			} catch (InterruptedException e) {
@@ -72,13 +76,40 @@ public class CdrProducer implements Runnable {
 			}
 			
 			int numOfCdrs = maxNumberOfCDRs - rand.nextInt(maxNumberOfCDRs);
+			boolean slowDown = false;
 			for (int i=0; i<numOfCdrs; i++) {
 				CDR cdr = createCDR();
 				database.add(cdr);
+				
+				Subscriber subscriber;
 				try {
-					apiDelegate.postTime(cdr.getCalling(), cdr.getCalledTime());
+					subscriber = apiDelegate.postTime(cdr.getCalling(), cdr.getCalledTime());
 				} catch (InterruptedException | ExecutionException | IOException e) {
+					subscriber = null;
 					e.printStackTrace();
+				}
+				if (subscriber==null) {
+					slowDown = true;
+					break;
+				}
+			}
+			
+			if (slowDown) actualAverageSleepTime += standardSleepTime;
+			else {
+				actualAverageSleepTime = standardSleepTime;
+				if (SubscriberTimeCache.INSTANCE.size() > 10) {
+					List<SubscriberTimeHolder> times = SubscriberTimeCache.INSTANCE.extractAll();
+					for (SubscriberTimeHolder sth : times) {
+						Subscriber subscriber;
+						try {
+							subscriber = apiDelegate.postTime(sth.getSubscriber(), sth.getTime());
+						} catch (InterruptedException | ExecutionException | IOException e) {
+							subscriber = null;
+							e.printStackTrace();
+						}
+						if (subscriber==null)
+							SubscriberTimeCache.INSTANCE.add(sth);
+					}
 				}
 			}
 		}

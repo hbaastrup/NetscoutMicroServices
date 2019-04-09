@@ -1,4 +1,4 @@
-package playground.micro.subscriber;
+package playground.micro.models;
 
 import java.util.List;
 

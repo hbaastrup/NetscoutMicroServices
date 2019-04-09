@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandMetrics;
 
 public class SubscriberGetAllCommand extends HystrixCommand<long[]> {
 	static final String QUERY = "/micro/sub/all";

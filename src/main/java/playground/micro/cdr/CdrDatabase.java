@@ -5,18 +5,19 @@ import java.util.List;
 
 import hba.tuples.Pair;
 import playground.micro.models.CDR;
+import playground.micro.models.CDRBucket;
 
 public class CdrDatabase {
 	static final int MAX_TIME_SLOTS = 0x20000; //in seconds (86400=24H => multiple with 2 = 20000(hex))
 	static final int MASK = MAX_TIME_SLOTS-1;
 	
-	CdrBucket[] buckets = new CdrBucket[MAX_TIME_SLOTS];
+	CDRBucket[] buckets = new CDRBucket[MAX_TIME_SLOTS];
 	int tail = Integer.MIN_VALUE;
 	int head = Integer.MIN_VALUE;
 	
 	public CdrDatabase() {
 		for (int i=0; i<buckets.length; i++)
-			buckets[i] = new CdrBucket();
+			buckets[i] = new CDRBucket();
 	}
 	
 	public void add(CDR cdr) {
@@ -39,19 +40,19 @@ public class CdrDatabase {
 		
 		if (fromInx<=toInx) {
 			for (int i=fromInx; i<=toInx; i++) {
-				CdrBucket bucket = buckets[i];
+				CDRBucket bucket = buckets[i];
 				for (CDR cdr : bucket.getAll())
 					list.add(cdr);
 			}
 		}
 		else {
 			for (int i=fromInx; i<MAX_TIME_SLOTS; i++) {
-				CdrBucket bucket = buckets[i];
+				CDRBucket bucket = buckets[i];
 				for (CDR cdr : bucket.getAll())
 					list.add(cdr);
 			}
 			for (int i=0; i<=toInx; i++) {
-				CdrBucket bucket = buckets[i];
+				CDRBucket bucket = buckets[i];
 				for (CDR cdr : bucket.getAll())
 					list.add(cdr);
 			}
@@ -68,7 +69,7 @@ public class CdrDatabase {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
 		
-		CdrBucket bucket = buckets[tail];
+		CDRBucket bucket = buckets[tail];
 		for (CDR cdr : bucket.getAll()) {
 			int sec = (int)(cdr.getEndTime()/1000);
 			if (sec < min) 
