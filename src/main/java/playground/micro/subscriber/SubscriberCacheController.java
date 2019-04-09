@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutionException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import playground.micro.models.Subscriber;
+
 public class SubscriberCacheController {
 	
 	SubscriberCache cache;

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import playground.micro.models.Subscriber;
+
 public class SubscriberCache {
 	static final int NUMBER_OF_PHONES = 1000;
 	static final int NUMBER_OF_DIGITS_IN_NUMBER = 8;

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+import playground.micro.models.TAC;
+
 public class TACCache {
 	HashMap<Integer, TAC> cache = new HashMap<>();
 	

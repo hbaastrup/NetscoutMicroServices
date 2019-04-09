@@ -2,7 +2,7 @@ package playground.micro.subscriber;
 
 import java.util.HashMap;
 
-import playground.micro.tac.TAC;
+import playground.micro.models.TAC;
 
 public enum SubscriberTacCache {
 	INSTANCE;

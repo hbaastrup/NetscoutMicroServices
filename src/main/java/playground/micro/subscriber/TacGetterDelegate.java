@@ -13,7 +13,7 @@ import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
-import playground.micro.tac.TAC;
+import playground.micro.models.TAC;
 
 //See https://github.com/Netflix/Hystrix/wiki/How-it-Works#flow-chart
 public class TacGetterDelegate {

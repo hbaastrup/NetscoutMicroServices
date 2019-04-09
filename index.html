@@ -73,7 +73,7 @@ HtmlTable.prototype.AddRow = function(arrCols, arrCssRow) {
 	}                
 	for(var i = 0; i < arrCols.length; i++) {
 		if(i == arrCols.length - 1) {
-			this.htmlOutput += "<td onclick=\"requestSubscriber(" + arrCols[i] + ")\" style=\"cursor: pointer;\">" + arrCols[i] + "</td>";
+			this.htmlOutput += "<td style=\"color:rgb(255,0,0);\" onclick=\"requestSubscriber(" + arrCols[i] + ")\" style=\"cursor: pointer;\">" + arrCols[i] + "</td>";
 		} else {
 			this.htmlOutput += "<td>" + arrCols[i] + "</td>";
 		}
@@ -105,15 +105,16 @@ function fillHTMLSubscriberTable(jsonResponse) {
     
 	var rows = JSON.parse(jsonResponse);
 	
-	var riga = new Array("Subscriber", "TAC", "Brand", "Model", "Model Type");
+	var riga = new Array("Subscriber", "Time", "TAC", "Brand", "Model", "Model Type");
     myTable.AddRowHeader(riga, "");
 	
 	var row = [];
 	row[0] = rows.number;
-	row[1] = rows.tac;
-	row[2] = rows.info.brand;
-	row[3] = rows.info.model;
-	row[4] = rows.info.type;
+	row[1] = rows.time;
+	row[2] = rows.tac;
+	row[3] = rows.info.brand;
+	row[4] = rows.info.model;
+	row[5] = rows.info.type;
 	myTable.AddRow(row);
 	
 	document.getElementById('div-html-table').innerHTML = myTable.GetHtml();   
@@ -124,14 +125,16 @@ function fillHTMLXDRsTable(jsonResponse) {
  
 	var rows = JSON.parse(jsonResponse);
 	
-	var riga = new Array("Begin Time", "End Time", "Subscriber");
+	var riga = new Array("Begin Time", "End Time", "Status", "Called", "Calling");
     myTable.AddRowHeader(riga, "");
 	
 	for (index in rows) {
 		var row = [];
 		row[0] = getCurrentTimeFromStamp(rows[index].beginTime);
 		row[1] = getCurrentTimeFromStamp(rows[index].endTime);
-		row[2] = rows[index].subscriber;
+		row[2] = rows[index].status;
+		row[3] = rows[index].called;
+		row[4] = rows[index].calling;
 		myTable.AddRow(row);
 	}
 	

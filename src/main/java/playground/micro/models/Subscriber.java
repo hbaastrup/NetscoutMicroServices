@@ -1,15 +1,17 @@
-package playground.micro.subscriber;
+package playground.micro.models;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import playground.micro.tac.TAC;
+import playground.micro.models.TAC;
+import playground.micro.subscriber.TacGetterDelegate;
 
 public class Subscriber {
 	private long number;
 	private int tac;
-	private TAC tacInfo = null;;
+	private TAC tacInfo = null;
+	private long time = 0;
 	
 	public Subscriber(long number, int tac) {
 		this.number = number;
@@ -23,6 +25,10 @@ public class Subscriber {
 	
 	public static Subscriber createNullObject() {
 		return new Subscriber(0L, 0);
+	}
+	
+	public void addTime(int time) { //time in milliseconds
+		this.time = time;
 	}
 	
 	public void lasyLoad(TacGetterDelegate delegate) {
@@ -47,6 +53,7 @@ public class Subscriber {
 		StringBuilder str = new StringBuilder("{");
 		str.append("\"number\":"+number);
 		str.append(",\"tac\":"+tac);
+		str.append(",\"time\":"+time);
 		if (tacInfo!=null) {
 			str.append(",\"info\":"+tacInfo.toString());
 		}

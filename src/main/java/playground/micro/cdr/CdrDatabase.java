@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hba.tuples.Pair;
+import playground.micro.models.CDR;
 
 public class CdrDatabase {
 	static final int MAX_TIME_SLOTS = 0x20000; //in seconds (86400=24H => multiple with 2 = 20000(hex))

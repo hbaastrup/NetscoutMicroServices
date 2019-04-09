@@ -7,7 +7,7 @@ import java.net.URL;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
-import playground.micro.tac.TAC;
+import playground.micro.models.TAC;
 
 public class TacGetCommand extends HystrixCommand<TAC> {
 	static final String QUERY = "/micro/tac/get/";

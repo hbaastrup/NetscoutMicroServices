@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+import playground.micro.models.CDR;
+
 public class CdrProducer implements Runnable {
 	CdrDatabase database;
 	int serviceTimeout = 1500;
 	String subscriberEndpoint;
-	SubscriberGetterDelegate getter;
+	SubscriberApiDelegate apiDelegate;
 	long[] subscribers;
 	
 	Random rand = new Random();
@@ -27,9 +29,9 @@ public class CdrProducer implements Runnable {
 		this.subscriberEndpoint = subscriberEndpoint;
 		this.database = database;
 		
-		getter = new SubscriberGetterDelegate(subscriberEndpoint, serviceTimeout);
+		apiDelegate = new SubscriberApiDelegate(subscriberEndpoint, serviceTimeout);
 		try {
-			subscribers = getter.getAllSubscribers();
+			subscribers = apiDelegate.getAllSubscribers();
 		} catch (InterruptedException | ExecutionException | IOException e) {
 			e.printStackTrace();
 			subscribers = new long[0];
@@ -73,6 +75,11 @@ public class CdrProducer implements Runnable {
 			for (int i=0; i<numOfCdrs; i++) {
 				CDR cdr = createCDR();
 				database.add(cdr);
+				try {
+					apiDelegate.postTime(cdr.getCalling(), cdr.getCalledTime());
+				} catch (InterruptedException | ExecutionException | IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		running = false;
@@ -80,11 +87,14 @@ public class CdrProducer implements Runnable {
 	
 	private CDR createCDR() {
 		long now = System.currentTimeMillis();
-		int inx = rand.nextInt(subscribers.length);
-		long subscriber = subscribers[inx];
+		int inx1 = rand.nextInt(subscribers.length);
+		int inx2 = rand.nextInt(subscribers.length);
+		while (inx1==inx2) inx2 = rand.nextInt(subscribers.length);
+		long calling = subscribers[inx1];
+		long called = subscribers[inx2];
 		if (rand.nextInt(100) < callFailures)
-			return new CDR(subscriber, now);
+			return new CDR(calling, called, now);
 		long duration = standardDurationTime + variationDurationTime - rand.nextInt(2*variationDurationTime);
-		return new CDR(subscriber, now-duration, now);
+		return new CDR(calling, called, now-duration, now);
 	}
 }
