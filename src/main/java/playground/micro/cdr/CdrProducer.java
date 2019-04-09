@@ -81,14 +81,14 @@ public class CdrProducer implements Runnable {
 				CDR cdr = createCDR();
 				database.add(cdr);
 				
-				Subscriber subscriber;
+				Long newTime;
 				try {
-					subscriber = apiDelegate.postTime(cdr.getCalling(), cdr.getCalledTime());
+					newTime = apiDelegate.postTime(cdr.getCalling(), cdr.getCalledTime());
 				} catch (InterruptedException | ExecutionException | IOException e) {
-					subscriber = null;
+					newTime = null;
 					e.printStackTrace();
 				}
-				if (subscriber==null) {
+				if (newTime==null) {
 					slowDown = true;
 					break;
 				}
@@ -98,16 +98,17 @@ public class CdrProducer implements Runnable {
 			else {
 				actualAverageSleepTime = standardSleepTime;
 				if (SubscriberTimeCache.INSTANCE.size() > 10) {
+					System.out.println("Updateing times from cache");
 					List<SubscriberTimeHolder> times = SubscriberTimeCache.INSTANCE.extractAll();
 					for (SubscriberTimeHolder sth : times) {
-						Subscriber subscriber;
+						Long newTime;
 						try {
-							subscriber = apiDelegate.postTime(sth.getSubscriber(), sth.getTime());
+							newTime = apiDelegate.postTime(sth.getSubscriber(), sth.getTime());
 						} catch (InterruptedException | ExecutionException | IOException e) {
-							subscriber = null;
+							newTime = null;
 							e.printStackTrace();
 						}
-						if (subscriber==null)
+						if (newTime==null)
 							SubscriberTimeCache.INSTANCE.add(sth);
 					}
 				}

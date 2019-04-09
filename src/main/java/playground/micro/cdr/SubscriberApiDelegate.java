@@ -41,7 +41,7 @@ public class SubscriberApiDelegate {
 		else return getAllSubscribersWithNoHystrix();		
 	}
 	
-	public Subscriber postTime(long subscriber, int time) throws InterruptedException, ExecutionException, IOException {
+	public Long postTime(long subscriber, int time) throws InterruptedException, ExecutionException, IOException {
 		if (USE_HYSTRIX) return postTimeWithHystrix(subscriber, time);
 		else return postTimeWithNoHystrix(subscriber, time);		
 	}
@@ -74,14 +74,14 @@ public class SubscriberApiDelegate {
 		return s;
 	}
 	
-	private Subscriber postTimeWithHystrix(long subscriber, int time) throws InterruptedException, ExecutionException {
+	private Long postTimeWithHystrix(long subscriber, int time) throws InterruptedException, ExecutionException {
 		SubscriberPostTimeCommand command = new SubscriberPostTimeCommand(subscriberUrlEndpoint, subscriber, time, config);
 //		return command.execute();
-		Future<Subscriber> subscriberFuture = command.queue();
+		Future<Long> subscriberFuture = command.queue();
 		return subscriberFuture.get();
 	}
 	
-	private Subscriber postTimeWithNoHystrix(long subscriber, int time) throws IOException {
+	private Long postTimeWithNoHystrix(long subscriber, int time) throws IOException {
 		URL url = new URL(subscriberUrlEndpoint+SubscriberGetAllCommand.QUERY+"/"+subscriber+"/"+time);
 		HttpURLConnection con = (HttpURLConnection)url.openConnection();
 		con.setRequestMethod("GET");
@@ -95,7 +95,7 @@ public class SubscriberApiDelegate {
 		}
 		in.close();
 		ObjectMapper objectMapper = new ObjectMapper();
-		Subscriber subs = objectMapper.readValue(content.toString(), Subscriber.class);
+		Long subs = objectMapper.readValue(content.toString(), Long.class);
 		return subs;
 	}
 	

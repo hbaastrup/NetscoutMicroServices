@@ -3,6 +3,7 @@ package playground.micro.tac;
 import java.io.File;
 import java.util.List;
 
+import io.javalin.BadRequestResponse;
 import io.javalin.Javalin;
 import playground.micro.models.TAC;
 import playground.micro.models.TACArray;
@@ -20,6 +21,8 @@ public class WebTAC {
 		
 		app.get("/micro/tac/get/:tac", ctx -> {
 			TAC tac = cache.get(ctx.pathParam("tac"));
+			if (tac==null)
+				throw new BadRequestResponse("ERROR: TAC does not exist");
 			ctx.json(tac);
 		});
 		
@@ -29,6 +32,7 @@ public class WebTAC {
 		});
 		
 		app.get("/micro/fail", ctx -> ctx.status(401).json("'err':'Unauthorized'"));
+		app.get("/micro/exception", ctx -> {throw new BadRequestResponse("ERROR: Provoked by GET");});
 	}
 	
 	public void close() {}

@@ -3,7 +3,7 @@ package playground.micro.cdr;
 import java.util.List;
 
 import hba.tuples.Pair;
-
+import io.javalin.BadRequestResponse;
 import io.javalin.Javalin;
 
 import playground.micro.kpi.KpiHolder;
@@ -42,6 +42,9 @@ public class WebCdr {
 			KpiHolder.INSTANCE.add(WEB_TIME, new TimeTaken((int)(System.currentTimeMillis()-startTime)));
 			ctx.json("{minTime:"+minMax.getValue0()+", maxTime:"+minMax.getValue1()+"}");
 		});
+		
+		app.get("/micro/fail", ctx -> ctx.status(401).json("'err':'Unauthorized'"));
+		app.get("/micro/exception", ctx -> {throw new BadRequestResponse("ERROR: Provoked by GET");});
 	}
 	
 	public void close() {}

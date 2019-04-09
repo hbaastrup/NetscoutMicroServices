@@ -47,6 +47,8 @@ public class Subscriber {
 	public int getTac() {return tac;}
 	@JsonGetter("info")
 	public TAC getInfo() {return tacInfo;}
+	@JsonGetter("time")
+	public long getTime() {return time;}
 	
 	@Override
 	public String toString() {

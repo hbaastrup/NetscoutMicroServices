@@ -10,8 +10,9 @@ import com.netflix.hystrix.HystrixCommand;
 
 import playground.micro.models.Subscriber;
 import playground.micro.models.SubscriberTimeHolder;
+import playground.micro.subscriber.TacGetCommand;
 
-public class SubscriberPostTimeCommand extends HystrixCommand<Subscriber> {
+public class SubscriberPostTimeCommand extends HystrixCommand<Long> {
 	static final String QUERY = "/micro/sub/time";
 	
 	String subscriberUrlEndpoint;
@@ -26,10 +27,10 @@ public class SubscriberPostTimeCommand extends HystrixCommand<Subscriber> {
 	}
 	
 	@Override
-	protected Subscriber run() throws Exception {
+	protected Long run() throws Exception {
 		URL url = new URL(subscriberUrlEndpoint+QUERY+"/"+subscriber+"/"+time);
 		HttpURLConnection con = (HttpURLConnection)url.openConnection();
-		con.setRequestMethod("GET");
+		con.setRequestMethod("POST");
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String line;
 		StringBuffer content = new StringBuffer();
@@ -39,13 +40,17 @@ public class SubscriberPostTimeCommand extends HystrixCommand<Subscriber> {
 		in.close();
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		Subscriber value = objectMapper.readValue(content.toString(), Subscriber.class);
+		Long value = objectMapper.readValue(content.toString(), Long.class);
 		return value;
 
 	}
 	
 	@Override
-	public Subscriber getFallback() {
+	public Long getFallback() {
+		System.out.println(SubscriberPostTimeCommand.class.getName()+" Use fallback");
+		Throwable t = getFailedExecutionException();
+		t.printStackTrace();
+
 		SubscriberTimeCache.INSTANCE.add(new SubscriberTimeHolder(subscriber, time));
 		return null;
 	}
