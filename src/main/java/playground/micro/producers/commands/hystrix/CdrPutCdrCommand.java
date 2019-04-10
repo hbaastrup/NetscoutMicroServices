@@ -1,4 +1,4 @@
-package playground.micro.producers.delegates;
+package playground.micro.producers.commands.hystrix;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

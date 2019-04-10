@@ -1,4 +1,4 @@
-package playground.micro.producers.delegates;
+package playground.micro.producers.commands.hystrix;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
 public class SubscriberGetAllCommand extends HystrixCommand<long[]> {
-	static final String QUERY = "/micro/sub/all";
+	public static final String QUERY = "/micro/sub/all";
 	
 	String subscriberUrlEndpoint;
 	

@@ -1,4 +1,4 @@
-package playground.micro.producers.delegates;
+package playground.micro.producers.commands.hystrix;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,7 +12,7 @@ import playground.micro.models.SubscriberTimeHolder;
 import playground.micro.producers.SubscriberTimeCache;
 
 public class SubscriberPostTimeCommand extends HystrixCommand<Long> {
-	static final String QUERY = "/micro/sub/time";
+	public static final String QUERY = "/micro/sub/time";
 	
 	String subscriberUrlEndpoint;
 	long subscriber;

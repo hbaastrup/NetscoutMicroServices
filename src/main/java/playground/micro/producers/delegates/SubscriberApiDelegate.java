@@ -15,6 +15,9 @@ import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
 import playground.micro.models.CDR;
+import playground.micro.producers.commands.hystrix.CdrPutCdrCommand;
+import playground.micro.producers.commands.hystrix.SubscriberGetAllCommand;
+import playground.micro.producers.commands.hystrix.SubscriberPostTimeCommand;
 
 //See https://github.com/Netflix/Hystrix/wiki/How-it-Works#flow-chart
 public class SubscriberApiDelegate {

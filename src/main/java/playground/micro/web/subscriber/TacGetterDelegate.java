@@ -14,6 +14,8 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 import playground.micro.models.TAC;
+import playground.micro.web.subscriber.commands.hystrix.TacGetAllCommand;
+import playground.micro.web.subscriber.commands.hystrix.TacGetCommand;
 
 //See https://github.com/Netflix/Hystrix/wiki/How-it-Works#flow-chart
 public class TacGetterDelegate {

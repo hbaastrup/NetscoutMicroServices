@@ -1,4 +1,4 @@
-package playground.micro.web.subscriber;
+package playground.micro.web.subscriber.commands.hystrix;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import com.netflix.hystrix.HystrixCommand;
 import playground.micro.models.TACArray;
 
 public class TacGetAllCommand extends HystrixCommand<int[]> {
-	static final String QUERY = "/micro/tac/all";
+	public static final String QUERY = "/micro/tac/all";
 	
 	String tacUrlEndpoint;
 	
