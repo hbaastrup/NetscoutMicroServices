@@ -22,6 +22,7 @@ public class TacGetterDelegate {
 	private static final boolean USE_HYSTRIX = true;
 	String tacUrlEndpoint;
 	int timeout;
+	int rollingMetricWindow = 60000; //in milliseconds
 	HystrixCommand.Setter config;
 	
 	public TacGetterDelegate(String tacUrlEndpoint, int timeout) {
@@ -32,9 +33,11 @@ public class TacGetterDelegate {
 		
 		HystrixCommandProperties.Setter commandProperties = HystrixCommandProperties.Setter();
 		commandProperties.withExecutionTimeoutInMilliseconds(timeout);
+		commandProperties.withMetricsRollingStatisticalWindowInMilliseconds(rollingMetricWindow);
 		
 		config.andCommandPropertiesDefaults(commandProperties);
 		config.andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter().withMaxQueueSize(-1).withCoreSize(15));
+		
 	}
 
 	public TAC getTac(int tacID) throws InterruptedException, ExecutionException, IOException {

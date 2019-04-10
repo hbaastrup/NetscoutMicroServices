@@ -6,6 +6,7 @@ import java.util.Random;
 import playground.micro.models.CDR;
 import playground.micro.models.SubscriberTimeHolder;
 import playground.micro.producers.delegates.SubscriberApiDelegate;
+import playground.micro.web.cdr.producer.CdrProducerWeb;
 
 public class CdrProducer implements Runnable {
 	int serviceTimeout = 1500;
@@ -116,11 +117,17 @@ public class CdrProducer implements Runnable {
 	
 	
 	public static void main(String[] args) {
+		int port = 10083;
 		String subscriberEndpoint = "http://localhost:10081";
 		String cdrEndpoint = "http://localhost:10082";
 		
 		for (int i=0; i<args.length; i++) {
-			if ("-s".equals(args[i])) {
+			if ("-p".equals(args[i])) {
+				i++;
+				if (i<args.length)
+					port = Integer.parseInt(args[i]);
+			}
+			else if ("-s".equals(args[i])) {
 				i++;
 				if (i<args.length)
 					subscriberEndpoint = args[i];
@@ -133,11 +140,14 @@ public class CdrProducer implements Runnable {
 		}
 		
 		CdrProducer producer = new CdrProducer(subscriberEndpoint, cdrEndpoint);
+		CdrProducerWeb web = new CdrProducerWeb(port);
+		System.out.println("CdrProducer is running");
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				System.out.println("STOPPING!!!");
 				producer.stopThread();
+				web.close();
 				System.out.println("STOPPED!!!");
 			}
 		});

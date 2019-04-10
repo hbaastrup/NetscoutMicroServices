@@ -5,6 +5,8 @@ import java.util.Random;
 
 import io.javalin.BadRequestResponse;
 import io.javalin.Javalin;
+import playground.micro.models.CommandMetricsHolder;
+import playground.micro.models.MonitorMetric;
 import playground.micro.models.Subscriber;
 
 public class WebSubscriber {
@@ -35,6 +37,14 @@ public class WebSubscriber {
 			List<Long> all = controller.getAllPhones();
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json(all);
+		});
+		
+		app.get("/micro/sub/metric", ctx -> {
+			MonitorMetric metric = new MonitorMetric();
+			List<CommandMetricsHolder> mitricList = CommandMetricsHolder.instanceHystrixCommandMetricsList();
+			metric.setCommandMetrics(mitricList);
+			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
+			ctx.json(metric);
 		});
 		
 		app.post("/micro/sub/time/:calling/:time", ctx -> {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.javalin.BadRequestResponse;
 import io.javalin.Javalin;
+import playground.micro.models.MonitorMetric;
 import playground.micro.models.TAC;
 import playground.micro.models.TACArray;
 
@@ -29,6 +30,11 @@ public class WebTAC {
 		app.get("/micro/tac/all", ctx -> {
 			List<Integer> all = cache.getAllTacs();
 			ctx.json(new TACArray(all));
+		});
+		
+		app.get("/micro/tac/metic", ctx -> {
+			MonitorMetric metric = new MonitorMetric();
+			ctx.json(metric);
 		});
 		
 		app.get("/micro/fail", ctx -> ctx.status(401).json("'err':'Unauthorized'"));

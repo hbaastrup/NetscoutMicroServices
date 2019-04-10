@@ -1,4 +1,4 @@
-package playground.micro.web.cdr;
+package playground.micro.web.cdr.database;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import playground.micro.kpi.KpiHolder;
 import playground.micro.kpi.TimeSeries;
 import playground.micro.kpi.TimeTaken;
 import playground.micro.models.CDR;
+import playground.micro.models.MonitorMetric;
 
 public class WebCdr {
 	static final String WEB_TIME = "CDR_WEB_TIME";
@@ -39,6 +40,12 @@ public class WebCdr {
 			KpiHolder.INSTANCE.add(WEB_TIME, new TimeTaken((int)(System.currentTimeMillis()-startTime)));
 			ctx.json("{minTime:"+minMax.getValue0()+", maxTime:"+minMax.getValue1()+"}");
 		});
+		
+		app.get("/micro/cdr/metic", ctx -> {
+			MonitorMetric metric = new MonitorMetric();
+			ctx.json(metric);
+		});
+
 		
 		// status=OK: curl -X PUT -F "calling=123456" -F "called=33455" -F "endtime=1554885540413" -F "duration=10000" localhost:10082/micro/cdr/put
 		// status=ERROR: curl -X PUT -F "calling=123456" -F "called=33455" -F "endtime=1554885540413" localhost:10082/micro/cdr/put

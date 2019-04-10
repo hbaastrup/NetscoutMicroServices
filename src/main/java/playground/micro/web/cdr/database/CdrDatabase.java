@@ -1,4 +1,4 @@
-package playground.micro.web.cdr;
+package playground.micro.web.cdr.database;
 
 import java.util.ArrayList;
 import java.util.List;
