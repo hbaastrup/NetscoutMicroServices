@@ -1,4 +1,4 @@
-package playground.micro.subscriber;
+package playground.micro.web.subscriber;
 
 import java.util.ArrayList;
 import java.util.HashMap;

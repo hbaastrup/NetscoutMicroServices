@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutionException;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import playground.micro.models.TAC;
-import playground.micro.subscriber.TacGetterDelegate;
+import playground.micro.web.subscriber.TacGetterDelegate;
 
 public class Subscriber {
 	private long number;

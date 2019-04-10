@@ -8,10 +8,8 @@ import java.net.URL;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
-import playground.micro.models.Subscriber;
 import playground.micro.models.SubscriberTimeHolder;
 import playground.micro.producers.SubscriberTimeCache;
-import playground.micro.subscriber.TacGetCommand;
 
 public class SubscriberPostTimeCommand extends HystrixCommand<Long> {
 	static final String QUERY = "/micro/sub/time";

@@ -1,4 +1,4 @@
-package playground.micro.subscriber;
+package playground.micro.web.subscriber;
 
 import java.io.IOException;
 import java.util.List;

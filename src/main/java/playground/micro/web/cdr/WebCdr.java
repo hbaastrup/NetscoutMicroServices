@@ -1,4 +1,4 @@
-package playground.micro.cdr;
+package playground.micro.web.cdr;
 
 import java.util.List;
 
