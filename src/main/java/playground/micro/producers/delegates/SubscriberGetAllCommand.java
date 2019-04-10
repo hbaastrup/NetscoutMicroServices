@@ -1,4 +1,4 @@
-package playground.micro.cdr;
+package playground.micro.producers.delegates;
 
 import java.io.BufferedReader;
 import java.io.IOException;

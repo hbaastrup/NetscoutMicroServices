@@ -1,18 +1,16 @@
-package playground.micro.cdr;
+package playground.micro.producers;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 
 import playground.micro.models.CDR;
-import playground.micro.models.Subscriber;
 import playground.micro.models.SubscriberTimeHolder;
+import playground.micro.producers.delegates.SubscriberApiDelegate;
 
 public class CdrProducer implements Runnable {
-	CdrDatabase database;
 	int serviceTimeout = 1500;
 	String subscriberEndpoint;
+	String cdrEndpoint;
 	SubscriberApiDelegate apiDelegate;
 	long[] subscribers;
 	
@@ -29,18 +27,12 @@ public class CdrProducer implements Runnable {
 	boolean running = false;
 	Thread thread = null;
 
-	public CdrProducer(String subscriberEndpoint, CdrDatabase database) {
+	public CdrProducer(String subscriberEndpoint, String cdrEndpoint) {
 		this.subscriberEndpoint = subscriberEndpoint;
-		this.database = database;
+		this.cdrEndpoint = cdrEndpoint;
 		
-		apiDelegate = new SubscriberApiDelegate(subscriberEndpoint, serviceTimeout);
-		try {
-			subscribers = apiDelegate.getAllSubscribers();
-		} catch (InterruptedException | ExecutionException | IOException e) {
-			e.printStackTrace();
-			subscribers = new long[0];
-			return;
-		}
+		apiDelegate = new SubscriberApiDelegate(subscriberEndpoint, cdrEndpoint, serviceTimeout);
+		subscribers = apiDelegate.getAllSubscribers();
 		
 		if (subscribers.length < 1) {
 			System.out.println("ERROR: No subscribers found");
@@ -79,15 +71,12 @@ public class CdrProducer implements Runnable {
 			boolean slowDown = false;
 			for (int i=0; i<numOfCdrs; i++) {
 				CDR cdr = createCDR();
-				database.add(cdr);
-				
-				Long newTime;
-				try {
-					newTime = apiDelegate.postTime(cdr.getCalling(), cdr.getCalledTime());
-				} catch (InterruptedException | ExecutionException | IOException e) {
-					newTime = null;
-					e.printStackTrace();
+				if (!apiDelegate.putCdr(cdr)) {
+					slowDown = true;
+					break;
 				}
+				
+				Long newTime = apiDelegate.postTime(cdr.getCalling(), cdr.getCalledTime());
 				if (newTime==null) {
 					slowDown = true;
 					break;
@@ -101,13 +90,7 @@ public class CdrProducer implements Runnable {
 					System.out.println("Updateing times from cache");
 					List<SubscriberTimeHolder> times = SubscriberTimeCache.INSTANCE.extractAll();
 					for (SubscriberTimeHolder sth : times) {
-						Long newTime;
-						try {
-							newTime = apiDelegate.postTime(sth.getSubscriber(), sth.getTime());
-						} catch (InterruptedException | ExecutionException | IOException e) {
-							newTime = null;
-							e.printStackTrace();
-						}
+						Long newTime= apiDelegate.postTime(sth.getSubscriber(), sth.getTime());
 						if (newTime==null)
 							SubscriberTimeCache.INSTANCE.add(sth);
 					}
@@ -128,5 +111,36 @@ public class CdrProducer implements Runnable {
 			return new CDR(calling, called, now);
 		long duration = standardDurationTime + variationDurationTime - rand.nextInt(2*variationDurationTime);
 		return new CDR(calling, called, now-duration, now);
+	}
+	
+	
+	
+	public static void main(String[] args) {
+		String subscriberEndpoint = "http://localhost:10081";
+		String cdrEndpoint = "http://localhost:10082";
+		
+		for (int i=0; i<args.length; i++) {
+			if ("-s".equals(args[i])) {
+				i++;
+				if (i<args.length)
+					subscriberEndpoint = args[i];
+			}
+			else if ("-c".equals(args[i])) {
+				i++;
+				if (i<args.length)
+					cdrEndpoint = args[i];
+			}
+		}
+		
+		CdrProducer producer = new CdrProducer(subscriberEndpoint, cdrEndpoint);
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				System.out.println("STOPPING!!!");
+				producer.stopThread();
+				System.out.println("STOPPED!!!");
+			}
+		});
+		
 	}
 }

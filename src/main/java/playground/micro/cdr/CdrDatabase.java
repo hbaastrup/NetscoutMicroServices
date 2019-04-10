@@ -7,7 +7,8 @@ import hba.tuples.Pair;
 import playground.micro.models.CDR;
 import playground.micro.models.CDRBucket;
 
-public class CdrDatabase {
+public enum CdrDatabase {
+	INSTANCE;
 	static final int MAX_TIME_SLOTS = 0x20000; //in seconds (86400=24H => multiple with 2 = 20000(hex))
 	static final int MASK = MAX_TIME_SLOTS-1;
 	
@@ -15,7 +16,7 @@ public class CdrDatabase {
 	int tail = Integer.MIN_VALUE;
 	int head = Integer.MIN_VALUE;
 	
-	public CdrDatabase() {
+	private CdrDatabase() {
 		for (int i=0; i<buckets.length; i++)
 			buckets[i] = new CDRBucket();
 	}

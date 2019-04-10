@@ -73,7 +73,7 @@ HtmlTable.prototype.AddRow = function(arrCols, arrCssRow) {
 	}                
 	for(var i = 0; i < arrCols.length; i++) {
 		if(i == arrCols.length - 1) {
-			this.htmlOutput += "<td style=\"color:rgb(255,0,0);\" onclick=\"requestSubscriber(" + arrCols[i] + ")\" style=\"cursor: pointer;\">" + arrCols[i] + "</td>";
+			this.htmlOutput += "<td style=\"color:rgb(0,0,255);\" onclick=\"requestSubscriber(" + arrCols[i] + ")\" style=\"cursor: pointer;\">" + arrCols[i] + "</td>";
 		} else {
 			this.htmlOutput += "<td>" + arrCols[i] + "</td>";
 		}

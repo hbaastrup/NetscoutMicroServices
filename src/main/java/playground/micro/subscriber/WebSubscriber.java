@@ -11,8 +11,9 @@ public class WebSubscriber {
 	Javalin app;
 	SubscriberCacheController controller;
 	Random rand = new Random();
-	long meanProssingTime = 700; //in milliseconds
+	long meanProssingTime = 500; //in milliseconds
 	long stdDevProssingTime = 600; //in milliseconds
+	boolean simulateSlowResponse = false;
 	
 	public WebSubscriber(int port, String tacServiceUrl) {
 		controller = new SubscriberCacheController(tacServiceUrl);
@@ -54,8 +55,10 @@ public class WebSubscriber {
 			ctx.json(p.getTime());
 			
 			//Simulate an eventually busy service
-			long processingTime = (long)(stdDevProssingTime * rand.nextGaussian() + meanProssingTime);
-			Thread.sleep(processingTime);
+			if (simulateSlowResponse) {
+				long processingTime = (long)(stdDevProssingTime * rand.nextGaussian() + meanProssingTime);
+				Thread.sleep(processingTime);
+			}
 		});
 		
 		app.get("/micro/fail", ctx -> ctx.status(401).json("'err':'Unauthorized'"));
@@ -64,10 +67,13 @@ public class WebSubscriber {
 	
 	public void close() {}
 	
+	public void setSimulateSlowResponse(boolean simulate) {simulateSlowResponse = simulate;}
+	
 	
 	public static void main(String[] args) throws Exception {
 		int port = 10081;
 		String tacEndpoint = "http://localhost:10080";
+		boolean simulateSlowResponse = false;
 		
 		for (int i=0; i<args.length; i++) {
 			if ("-p".equals(args[i])) {
@@ -80,9 +86,13 @@ public class WebSubscriber {
 				if (i<args.length)
 					tacEndpoint = args[i];
 			}
+			else if ("-s".equals(args[i])) {
+				simulateSlowResponse = true;
+			}
 		}
 
 		WebSubscriber web = new WebSubscriber(port, tacEndpoint);
+		web.setSimulateSlowResponse(simulateSlowResponse);
 		
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {

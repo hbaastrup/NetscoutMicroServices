@@ -1,4 +1,4 @@
-package playground.micro.cdr;
+package playground.micro.producers.delegates;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,17 +14,20 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
+import playground.micro.models.CDR;
 import playground.micro.models.Subscriber;
 
 //See https://github.com/Netflix/Hystrix/wiki/How-it-Works#flow-chart
 public class SubscriberApiDelegate {
 	private static final boolean USE_HYSTRIX = true;
 	String subscriberUrlEndpoint;
+	String cdrUrlEndpoint;
 	int timeout;
 	HystrixCommand.Setter config;
 	
-	public SubscriberApiDelegate(String subscriberUrlEndpoint, int timeout) {
+	public SubscriberApiDelegate(String subscriberUrlEndpoint, String cdrUrlEndpoint, int timeout) {
 		this.subscriberUrlEndpoint = subscriberUrlEndpoint;
+		this.cdrUrlEndpoint = cdrUrlEndpoint;
 		this.timeout = timeout;
 		
 		config = HystrixCommand.Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(SubscriberGetAllCommand.class.getName()));
@@ -36,14 +39,35 @@ public class SubscriberApiDelegate {
 		config.andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter().withMaxQueueSize(-1).withCoreSize(15));
 	}
 	
-	public long[] getAllSubscribers() throws InterruptedException, ExecutionException, IOException {
-		if (USE_HYSTRIX) return getAllSubscribersWithHystrix();
-		else return getAllSubscribersWithNoHystrix();		
+	
+	public long[] getAllSubscribers() {
+		try {
+			if (USE_HYSTRIX) return getAllSubscribersWithHystrix();
+			else return getAllSubscribersWithNoHystrix();	
+		} catch (InterruptedException | ExecutionException | IOException e) {
+			e.printStackTrace();
+			return new long[0];
+		}
 	}
 	
-	public Long postTime(long subscriber, int time) throws InterruptedException, ExecutionException, IOException {
-		if (USE_HYSTRIX) return postTimeWithHystrix(subscriber, time);
-		else return postTimeWithNoHystrix(subscriber, time);		
+	public Long postTime(long subscriber, int time) {
+		try {
+			if (USE_HYSTRIX) return postTimeWithHystrix(subscriber, time);
+			else return postTimeWithNoHystrix(subscriber, time);		
+		} catch (InterruptedException | ExecutionException | IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public boolean putCdr(CDR cdr) {
+		try {
+			if (USE_HYSTRIX) return putCdrWithHystrix(cdr);
+			else return putCdrWithNoHystrix(cdr);
+		} catch (InterruptedException | ExecutionException | IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	
@@ -84,7 +108,7 @@ public class SubscriberApiDelegate {
 	private Long postTimeWithNoHystrix(long subscriber, int time) throws IOException {
 		URL url = new URL(subscriberUrlEndpoint+SubscriberGetAllCommand.QUERY+"/"+subscriber+"/"+time);
 		HttpURLConnection con = (HttpURLConnection)url.openConnection();
-		con.setRequestMethod("GET");
+		con.setRequestMethod("POST");
 		con.setConnectTimeout(timeout);
 		con.setReadTimeout(timeout);
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -97,6 +121,29 @@ public class SubscriberApiDelegate {
 		ObjectMapper objectMapper = new ObjectMapper();
 		Long subs = objectMapper.readValue(content.toString(), Long.class);
 		return subs;
+	}
+	
+	private boolean putCdrWithHystrix(CDR cdr) throws InterruptedException, ExecutionException {
+		CdrPutCdrCommand command = new CdrPutCdrCommand(cdrUrlEndpoint, cdr, config);
+//		return command.execute();
+		Future<Boolean> subscriberFuture = command.queue();
+		return subscriberFuture.get();
+	}
+	
+	private boolean putCdrWithNoHystrix(CDR cdr) throws IOException {
+		URL url = new URL(cdrUrlEndpoint+CdrPutCdrCommand.QUERY+"?calling="+cdr.getCalling()+"&called="+cdr.getCalled()+"&endtime="+cdr.getEndTime()+"&endtime="+cdr.getCalledTime());
+		HttpURLConnection con = (HttpURLConnection)url.openConnection();
+		con.setRequestMethod("PUT");
+		con.setConnectTimeout(timeout);
+		con.setReadTimeout(timeout);
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		StringBuffer content = new StringBuffer();
+		String line;
+		while ((line = in.readLine()) != null) {
+			content.append(line);
+		}
+		in.close();
+		return true;
 	}
 	
 	

@@ -1,4 +1,4 @@
-package playground.micro.cdr;
+package playground.micro.producers;
 
 import java.util.ArrayList;
 import java.util.List;
