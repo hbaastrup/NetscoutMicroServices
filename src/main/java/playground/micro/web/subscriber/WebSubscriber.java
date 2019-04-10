@@ -39,7 +39,7 @@ public class WebSubscriber {
 			ctx.json(all);
 		});
 		
-		app.get("/micro/sub/metric", ctx -> {
+		app.get("/micro/metric", ctx -> {
 			MonitorMetric metric = new MonitorMetric();
 			List<CommandMetricsHolder> mitricList = CommandMetricsHolder.instanceHystrixCommandMetricsList();
 			metric.setCommandMetrics(mitricList);

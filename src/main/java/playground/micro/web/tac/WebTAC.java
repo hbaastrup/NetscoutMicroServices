@@ -32,7 +32,7 @@ public class WebTAC {
 			ctx.json(new TACArray(all));
 		});
 		
-		app.get("/micro/tac/metic", ctx -> {
+		app.get("/micro/metic", ctx -> {
 			MonitorMetric metric = new MonitorMetric();
 			ctx.json(metric);
 		});

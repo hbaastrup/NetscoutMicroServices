@@ -6,9 +6,6 @@ import hba.tuples.Pair;
 import io.javalin.BadRequestResponse;
 import io.javalin.Javalin;
 
-import playground.micro.kpi.KpiHolder;
-import playground.micro.kpi.TimeSeries;
-import playground.micro.kpi.TimeTaken;
 import playground.micro.models.CDR;
 import playground.micro.models.MonitorMetric;
 
@@ -18,7 +15,6 @@ public class WebCdr {
 	Javalin app;
 
 	public WebCdr(int port) {
-		KpiHolder.INSTANCE.add(WEB_TIME, new TimeSeries(WEB_TIME_DURATION));
 		
 		app = Javalin.create();
 		app.enableRouteOverview("/path"); // render a HTML page showing all mapped routes
@@ -26,22 +22,18 @@ public class WebCdr {
 		app.start(port);
 		
 		app.get("/micro/cdr/get/:begin/:end", ctx -> {
-			long startTime = System.currentTimeMillis();
 			List<CDR> cdrs = CdrDatabase.INSTANCE.get(ctx.pathParam("begin"), ctx.pathParam("end"));
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
-			KpiHolder.INSTANCE.add(WEB_TIME, new TimeTaken((int)(System.currentTimeMillis()-startTime)));
 			ctx.json(cdrs);
 		});
 		
 		app.get("/micro/cdr/get/time", ctx -> {
-			long startTime = System.currentTimeMillis();
 			Pair<Integer, Integer> minMax = CdrDatabase.INSTANCE.getMinMaxTime();
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
-			KpiHolder.INSTANCE.add(WEB_TIME, new TimeTaken((int)(System.currentTimeMillis()-startTime)));
 			ctx.json("{minTime:"+minMax.getValue0()+", maxTime:"+minMax.getValue1()+"}");
 		});
 		
-		app.get("/micro/cdr/metic", ctx -> {
+		app.get("/micro/metic", ctx -> {
 			MonitorMetric metric = new MonitorMetric();
 			ctx.json(metric);
 		});

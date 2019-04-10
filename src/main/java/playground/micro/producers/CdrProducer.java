@@ -14,6 +14,7 @@ public class CdrProducer implements Runnable {
 	String cdrEndpoint;
 	SubscriberApiDelegate apiDelegate;
 	long[] subscribers;
+	long lastRun = 0;
 	
 	Random rand = new Random();
 	long standardSleepTime = 1000;
@@ -56,10 +57,13 @@ public class CdrProducer implements Runnable {
 		thread = null;
 	}
 	
+	public long getLastRun() {return lastRun;}
+	
 	@Override
 	public void run() {
 		running = true;
 		while (running) {
+			lastRun = System.currentTimeMillis();
 			long nextSleep = actualAverageSleepTime + variationSleepTime - rand.nextInt(2*variationSleepTime);
 			try {
 				Thread.sleep(nextSleep);
@@ -140,7 +144,7 @@ public class CdrProducer implements Runnable {
 		}
 		
 		CdrProducer producer = new CdrProducer(subscriberEndpoint, cdrEndpoint);
-		CdrProducerWeb web = new CdrProducerWeb(port);
+		CdrProducerWeb web = new CdrProducerWeb(port, producer);
 		System.out.println("CdrProducer is running");
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
