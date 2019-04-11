@@ -12,11 +12,13 @@
 	<property name="subscriber.dist.jar" value="MicroServices-subscriber.${version}.jar" />
 	<property name="cdr.dist.jar" value="MicroServices-cdr.${version}.jar" />
 	<property name="producers.dist.jar" value="MicroServices-producers.${version}.jar" />
+	<property name="monitor.dist.jar" value="MicroServices-monitor.${version}.jar" />
 
 	<property name="tac.manifest.file" value="${basedir}/manifest-tac.mf" />
 	<property name="subscriber.manifest.file" value="${basedir}/manifest-subscriber.mf" />
 	<property name="cdr.manifest.file" value="${basedir}/manifest-cdr.mf" />
 	<property name="producers.manifest.file" value="${basedir}/manifest-producers.mf" />
+	<property name="monitor.manifest.file" value="${basedir}/manifest-monitor.mf" />
 
 	<property name="src.dir" location="${basedir}/src/main/java" />
 
@@ -80,6 +82,12 @@
 		<copy todir="${dist.dir}">
 			<fileset file="index.html" />
 		</copy>
+		<copy todir="${dist.dir}">
+			<fileset file="start.sh" />
+		</copy>
+		<copy todir="${dist.dir}">
+			<fileset file="stop.sh" />
+		</copy>
 	</target>
 
 	<target name="tac-jar" depends="copy" description="Build the JAR file" >
@@ -114,6 +122,14 @@
 		</jar>
 	</target>
 
-	<target name="deploy" depends="producers-jar" />
+	<target name="monitor-jar" depends="producers-jar" description="Build the JAR file" >
+		<jar jarfile="${dist.dir}/${monitor.dist.jar}" manifest="${monitor.manifest.file}" >
+			<fileset dir="${build.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="deploy" depends="monitor-jar" />
 </project>
 

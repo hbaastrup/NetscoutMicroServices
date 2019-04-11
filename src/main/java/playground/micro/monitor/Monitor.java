@@ -112,6 +112,7 @@ public class Monitor implements Runnable {
 		
 		Monitor monitor = new Monitor(endpoints, pollTime);
 		WebMonitor web = new WebMonitor(port, monitor);
+		System.out.println("Monitor is running");
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
