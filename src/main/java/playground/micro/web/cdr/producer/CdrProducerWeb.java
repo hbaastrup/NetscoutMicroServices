@@ -19,10 +19,10 @@ public class CdrProducerWeb {
 		app.enableStaticFiles(".");
 		app.start(port);
 
-		app.get("/micro/metric", ctx -> {
+		app.get("/micro/metic", ctx -> {
 			MonitorMetric metric = new MonitorMetric();
 			metric.putParameter("lastRun", cdrProducer.getLastRun());
-			List<CommandMetricsHolder> mitricList = CommandMetricsHolder.instanceHystrixCommandMetricsList();
+			List<CommandMetricsHolder> mitricList = CommandMetricsHolder.instanceHystrixCommandMetricsList(cdrProducer.getMaxWebWaitRequestTime());
 			metric.setCommandMetrics(mitricList);
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json(metric);

@@ -23,6 +23,7 @@ public class CdrProducer implements Runnable {
 	long standardDurationTime = 120000;
 	int variationDurationTime = 60000;
 	int maxNumberOfCDRs = 10;
+	int maxWebWaitRequestTime = 1000;
 	
 	int callFailures = 20; //in percent
 	
@@ -58,6 +59,7 @@ public class CdrProducer implements Runnable {
 	}
 	
 	public long getLastRun() {return lastRun;}
+	public int getMaxWebWaitRequestTime() {return maxWebWaitRequestTime;}
 	
 	@Override
 	public void run() {

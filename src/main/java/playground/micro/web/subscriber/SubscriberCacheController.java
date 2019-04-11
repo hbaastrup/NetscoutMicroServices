@@ -34,6 +34,8 @@ public class SubscriberCacheController {
 		System.out.println("Phone Cache started-up");
 	}
 	
+	public int getTimeout() {return timeout;}
+	
 	public Subscriber getPhone(String number) {
 		long n = Long.parseLong(number);
 		return getPhone(n);
