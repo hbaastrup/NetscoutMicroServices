@@ -22,7 +22,7 @@ public class CdrProducerWeb {
 		app.start(port);
 
 		app.get("/micro/metic", ctx -> {
-			MonitorMetric metric = new MonitorMetric();
+			MonitorMetric metric = new MonitorMetric().setName(name);
 			metric.putParameter("lastRun", cdrProducer.getLastRun());
 			List<CommandMetricsHolder> mitricList = CommandMetricsHolder.instanceHystrixCommandMetricsList(cdrProducer.getMaxWebWaitRequestTime());
 			metric.setCommandMetrics(mitricList);

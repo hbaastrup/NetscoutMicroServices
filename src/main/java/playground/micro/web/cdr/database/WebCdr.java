@@ -40,7 +40,7 @@ public class WebCdr {
 		});
 		
 		app.get("/micro/metic", ctx -> {
-			MonitorMetric metric = new MonitorMetric();
+			MonitorMetric metric = new MonitorMetric().setName(name);
 			ctx.json(metric);
 		});
 

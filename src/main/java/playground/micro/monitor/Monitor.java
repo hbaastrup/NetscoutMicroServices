@@ -96,7 +96,7 @@ public class Monitor implements Runnable {
 				if (i<args.length)
 					port = Integer.parseInt(args[i]);
 			}
-			else if ("-t".equals(args[i])) {
+			else if ("-n".equals(args[i])) {
 				i++;
 				if (i<args.length)
 					name = args[i];

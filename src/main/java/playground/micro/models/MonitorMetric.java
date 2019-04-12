@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 public class MonitorMetric {
+	String name = "";
 	boolean alive = true;
 	long timestamp = System.currentTimeMillis();
 	HashMap<String, CommandMetricsHolder> commandMetrics = new HashMap<>();
 	HashMap<String, Object> otherParameters = new HashMap<>();
 	
+	public String getName() {return name;}
+	public MonitorMetric setName(String name) {this.name = name; return this;}
 	public boolean isAlive() {return alive;}
 	public long getTimestamp() {return timestamp;}
 	

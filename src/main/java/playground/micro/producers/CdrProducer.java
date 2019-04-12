@@ -13,7 +13,7 @@ public class CdrProducer implements Runnable {
 	String subscriberEndpoint;
 	String cdrEndpoint;
 	SubscriberApiDelegate apiDelegate;
-	long[] subscribers;
+	long[] subscribers = null;
 	long lastRun = 0;
 	
 	Random rand = new Random();
@@ -36,11 +36,6 @@ public class CdrProducer implements Runnable {
 		
 		apiDelegate = new SubscriberApiDelegate(subscriberEndpoint, cdrEndpoint, serviceTimeout);
 		subscribers = apiDelegate.getAllSubscribers();
-		
-		if (subscribers.length < 1) {
-			System.out.println("ERROR: No subscribers found");
-			return;
-		}
 		
 		startThread();
 	}
@@ -72,6 +67,12 @@ public class CdrProducer implements Runnable {
 			} catch (InterruptedException e) {
 				running = false;
 				break;
+			}
+			
+			if (subscribers==null || subscribers.length < 1) {
+				subscribers = apiDelegate.getAllSubscribers();
+				if (subscribers.length < 1)
+					continue;
 			}
 			
 			int numOfCdrs = maxNumberOfCDRs - rand.nextInt(maxNumberOfCDRs);

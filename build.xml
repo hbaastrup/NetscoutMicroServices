@@ -80,6 +80,9 @@
 		<copy todir="${dist.dir}">
 			<fileset file="stop.sh" />
 		</copy>
+		<copy todir="${dist.dir}">
+			<fileset file="config.json" />
+		</copy>
 	</target>
 
 	<target name="jar" depends="copy" description="Build the JAR file" >

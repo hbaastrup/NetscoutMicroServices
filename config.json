@@ -1,0 +1,43 @@
+{
+  "jarFile":"MicroServices.1.0.0.jar",
+  "portRange":[10080, 10100],
+  "workers" : [
+    {
+      "name": "Orchestrator",
+      "mainClass":"playground.micro.orchestrating.SimpleOrchestrator",
+      "startNumber": 1,
+      "arguments":[]
+    },
+    {
+      "name": "TAC",
+      "mainClass":"playground.micro.web.tac.WebTAC",
+      "startNumber": 2,
+      "arguments":[{"port": "-p"},{"name": "-n"},{"dataFile":"-d"}]
+    },
+    {
+      "name": "Subscriber DB",
+      "mainClass":"playground.micro.web.subscriber.WebSubscriber",
+      "startNumber": 3,
+      "arguments":[{"port": "-p"},{"name": "-n"},{"TAC":"-t"},{"slow": "-s"}]
+    },
+    {
+      "name": "CDR DB",
+      "mainClass":"playground.micro.web.cdr.database.WebCdr",
+      "startNumber": 4,
+      "arguments":[{"port": "-p"},{"name": "-n"}]
+    },
+    {
+      "name": "CDR Producer",
+      "mainClass":"playground.micro.producers.CdrProducer",
+      "startNumber": 5,
+      "arguments":[{"port": "-p"},{"name": "-n"}, {"Subscriber DB":"-s"},{"CDR DB":"-c"}]
+    },
+    {
+      "name": "Monitor",
+      "mainClass":"playground.micro.monitor.Monitor",
+      "startNumber": 6,
+      "arguments":[{"port": "-p"},{"name": "-n"},{"pollTime":"-t"}]
+    }
+  ]
+}
+

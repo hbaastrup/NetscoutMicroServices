@@ -46,7 +46,7 @@ public class WebSubscriber {
 		});
 		
 		app.get("/micro/metic", ctx -> {
-			MonitorMetric metric = new MonitorMetric();
+			MonitorMetric metric = new MonitorMetric().setName(name);
 			List<CommandMetricsHolder> mitricList = CommandMetricsHolder.instanceHystrixCommandMetricsList(controller.getTimeout());
 			metric.setCommandMetrics(mitricList);
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
