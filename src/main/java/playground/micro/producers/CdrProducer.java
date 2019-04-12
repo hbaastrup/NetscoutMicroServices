@@ -124,6 +124,7 @@ public class CdrProducer implements Runnable {
 	
 	public static void main(String[] args) {
 		int port = 10083;
+		String name = CdrProducerWeb.class.getName();
 		String subscriberEndpoint = "http://localhost:10081";
 		String cdrEndpoint = "http://localhost:10082";
 		
@@ -132,6 +133,11 @@ public class CdrProducer implements Runnable {
 				i++;
 				if (i<args.length)
 					port = Integer.parseInt(args[i]);
+			}
+			else if ("-n".equals(args[i])) {
+				i++;
+				if (i<args.length)
+					name = args[i];
 			}
 			else if ("-s".equals(args[i])) {
 				i++;
@@ -146,7 +152,7 @@ public class CdrProducer implements Runnable {
 		}
 		
 		CdrProducer producer = new CdrProducer(subscriberEndpoint, cdrEndpoint);
-		CdrProducerWeb web = new CdrProducerWeb(port, producer);
+		CdrProducerWeb web = new CdrProducerWeb(port, name, producer);
 		System.out.println("CdrProducer is running");
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {

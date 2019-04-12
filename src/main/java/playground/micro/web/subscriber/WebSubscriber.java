@@ -11,13 +11,15 @@ import playground.micro.models.Subscriber;
 
 public class WebSubscriber {
 	Javalin app;
+	String name;
 	SubscriberCacheController controller;
 	Random rand = new Random();
 	long meanProssingTime = 500; //in milliseconds
 	long stdDevProssingTime = 600; //in milliseconds
 	boolean simulateSlowResponse = false;
 	
-	public WebSubscriber(int port, String tacServiceUrl) {
+	public WebSubscriber(int port, String name, String tacServiceUrl) {
+		this.name = name;
 		controller = new SubscriberCacheController(tacServiceUrl);
 		
 		app = Javalin.create();
@@ -37,6 +39,10 @@ public class WebSubscriber {
 			List<Long> all = controller.getAllPhones();
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json(all);
+		});
+		
+		app.get("/micro/get/name", ctx -> {
+			ctx.result(name);
 		});
 		
 		app.get("/micro/metic", ctx -> {
@@ -82,6 +88,7 @@ public class WebSubscriber {
 	
 	public static void main(String[] args) throws Exception {
 		int port = 10081;
+		String name = WebSubscriber.class.getName();
 		String tacEndpoint = "http://localhost:10080";
 		boolean simulateSlowResponse = false;
 		
@@ -90,6 +97,11 @@ public class WebSubscriber {
 				i++;
 				if (i<args.length)
 					port = Integer.parseInt(args[i]);
+			}
+			else if ("-n".equals(args[i])) {
+				i++;
+				if (i<args.length)
+					name = args[i];
 			}
 			else if ("-t".equals(args[i])) {
 				i++;
@@ -101,7 +113,7 @@ public class WebSubscriber {
 			}
 		}
 
-		WebSubscriber web = new WebSubscriber(port, tacEndpoint);
+		WebSubscriber web = new WebSubscriber(port, name, tacEndpoint);
 		web.setSimulateSlowResponse(simulateSlowResponse);
 		
 		

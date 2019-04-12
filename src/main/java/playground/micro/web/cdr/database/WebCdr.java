@@ -13,8 +13,10 @@ public class WebCdr {
 	static final String WEB_TIME = "CDR_WEB_TIME";
 	static final int WEB_TIME_DURATION = 60000;
 	Javalin app;
+	String name;
 
-	public WebCdr(int port) {
+	public WebCdr(int port, String name) {
+		this.name = name;
 		
 		app = Javalin.create();
 		app.enableRouteOverview("/path"); // render a HTML page showing all mapped routes
@@ -31,6 +33,10 @@ public class WebCdr {
 			Pair<Integer, Integer> minMax = CdrDatabase.INSTANCE.getMinMaxTime();
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json("{minTime:"+minMax.getValue0()+", maxTime:"+minMax.getValue1()+"}");
+		});
+		
+		app.get("/micro/get/name", ctx -> {
+			ctx.result(name);
 		});
 		
 		app.get("/micro/metic", ctx -> {
@@ -76,6 +82,7 @@ public class WebCdr {
 	
 	public static void main(String[] args) {
 		int port = 10082;
+		String name = WebCdr.class.getName();
 		
 		for (int i=0; i<args.length; i++) {
 			if ("-p".equals(args[i])) {
@@ -83,9 +90,14 @@ public class WebCdr {
 				if (i<args.length)
 					port = Integer.parseInt(args[i]);
 			}
+			else if ("-n".equals(args[i])) {
+				i++;
+				if (i<args.length)
+					name = args[i];
+			}
 		}
 
-		WebCdr web = new WebCdr(port);
+		WebCdr web = new WebCdr(port, name);
 		
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {

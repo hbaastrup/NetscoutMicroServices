@@ -8,9 +8,11 @@ import playground.micro.monitor.Monitor;
 
 public class WebMonitor {
 	Javalin app;
+	String name;
 	Monitor monitor;
 	
-	public WebMonitor(int port, Monitor monitor) {
+	public WebMonitor(int port, String name, Monitor monitor) {
+		this.name = name;
 		this.monitor = monitor;
 		
 		app = Javalin.create();
@@ -22,6 +24,11 @@ public class WebMonitor {
 			List<EnpointStatus> status = monitor.getAllStatus();
 			ctx.json(status);
 		});
+		
+		app.get("/micro/get/name", ctx -> {
+			ctx.result(name);
+		});
+		
 	}
 	
 	public void close() {}

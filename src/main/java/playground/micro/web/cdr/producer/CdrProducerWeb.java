@@ -9,9 +9,11 @@ import playground.micro.producers.CdrProducer;
 
 public class CdrProducerWeb {
 	Javalin app;
+	String name;
 	CdrProducer cdrProducer;
 
-	public CdrProducerWeb(int port, CdrProducer cdrProducer) {
+	public CdrProducerWeb(int port, String name, CdrProducer cdrProducer) {
+		this.name = name;
 		this.cdrProducer = cdrProducer;
 		
 		app = Javalin.create();
@@ -27,6 +29,11 @@ public class CdrProducerWeb {
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json(metric);
 		});
+		
+		app.get("/micro/get/name", ctx -> {
+			ctx.result(name);
+		});
+		
 	}
 	
 	public void close() {}

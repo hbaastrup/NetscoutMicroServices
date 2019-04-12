@@ -11,9 +11,11 @@ import playground.micro.models.TACArray;
 
 public class WebTAC {
 	Javalin app;
+	String name;
 	TACCache cache = new TACCache();
 	
-	public WebTAC(int port, TACCache cache) {
+	public WebTAC(int port, String name, TACCache cache) {
+		this.name = name;
 		this.cache = cache;
 		app = Javalin.create();
 		app.enableRouteOverview("/path"); // render a HTML page showing all mapped routes
@@ -32,6 +34,10 @@ public class WebTAC {
 			ctx.json(new TACArray(all));
 		});
 		
+		app.get("/micro/get/name", ctx -> {
+			ctx.result(name);
+		});
+		
 		app.get("/micro/metic", ctx -> {
 			MonitorMetric metric = new MonitorMetric();
 			ctx.json(metric);
@@ -45,6 +51,7 @@ public class WebTAC {
 	
 	
 	public static void main(String[] args) throws Exception {
+		String name = WebTAC.class.getName();
 		String dataFile = "data/netscout-avvasi_20190315_84_of_84.txt";
 		int port = 10080;
 		
@@ -53,6 +60,11 @@ public class WebTAC {
 				i++;
 				if (i<args.length)
 					port = Integer.parseInt(args[i]);
+			}
+			else if ("-n".equals(args[i])) {
+				i++;
+				if (i<args.length)
+					name = args[i];
 			}
 			else if ("-d".equals(args[i])) {
 				i++;
@@ -63,7 +75,7 @@ public class WebTAC {
 		
 		TACCache cache = new TACCache();
 		cache.load(new File(dataFile));
-		WebTAC web = new WebTAC(port, cache);
+		WebTAC web = new WebTAC(port, name, cache);
 		
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {

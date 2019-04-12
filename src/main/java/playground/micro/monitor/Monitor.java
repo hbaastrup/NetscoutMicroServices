@@ -85,6 +85,7 @@ public class Monitor implements Runnable {
 	
 	public static void main(String[] args) {
 		int port = 10090;
+		String name = WebMonitor.class.getName();
 		long pollTime = 5000;
 		String[] endpoints = {"http://localhost:10080","http://localhost:10081","http://localhost:10082","http://localhost:10083"};
 		ArrayList<String> endPoints = new ArrayList<>();
@@ -94,6 +95,11 @@ public class Monitor implements Runnable {
 				i++;
 				if (i<args.length)
 					port = Integer.parseInt(args[i]);
+			}
+			else if ("-t".equals(args[i])) {
+				i++;
+				if (i<args.length)
+					name = args[i];
 			}
 			else if ("-t".equals(args[i])) {
 				i++;
@@ -111,7 +117,7 @@ public class Monitor implements Runnable {
 
 		
 		Monitor monitor = new Monitor(endpoints, pollTime);
-		WebMonitor web = new WebMonitor(port, monitor);
+		WebMonitor web = new WebMonitor(port, name, monitor);
 		System.out.println("Monitor is running");
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
