@@ -1,15 +1,15 @@
 #!/bin/sh
 
-java -jar MicroServices-tac.1.0.0.jar &
+java -cp MicroServices.1.0.0.jar playground.micro.web.tac.WebTAC &
 sleep 2
-java -jar MicroServices-subscriber.1.0.0.jar &
+java -cp MicroServices.1.0.0.jar playground.micro.web.subscriber.WebSubscriber &
 # slowdown response sometimes
-#java -jar MicroServices-subscriber.1.0.0.jar -s &
+#java -cp MicroServices.1.0.0.jar playground.micro.web.subscriber.WebSubscriber -s &
 sleep 2
-java -jar MicroServices-cdr.1.0.0.jar &
+java -cp MicroServices.1.0.0.jar playground.micro.web.cdr.database.WebCdr &
 sleep 2
-java -jar MicroServices-producers.1.0.0.jar &
+java -cp MicroServices.1.0.0.jar playground.micro.producers.CdrProducer &
 sleep 2
-java -jar MicroServices-monitor.1.0.0.jar &
+java -cp MicroServices.1.0.0.jar playground.micro.monitor.Monitor &
 echo "DONE!"
 

@@ -8,17 +8,9 @@
 	<property name="data.dir" location="${basedir}/data" />
 
 	<property name="dist.dir" location="${basedir}/target" />
-	<property name="tac.dist.jar" value="MicroServices-tac.${version}.jar" />
-	<property name="subscriber.dist.jar" value="MicroServices-subscriber.${version}.jar" />
-	<property name="cdr.dist.jar" value="MicroServices-cdr.${version}.jar" />
-	<property name="producers.dist.jar" value="MicroServices-producers.${version}.jar" />
-	<property name="monitor.dist.jar" value="MicroServices-monitor.${version}.jar" />
+	<property name="dist.jar" value="MicroServices.${version}.jar" />
 
-	<property name="tac.manifest.file" value="${basedir}/manifest-tac.mf" />
-	<property name="subscriber.manifest.file" value="${basedir}/manifest-subscriber.mf" />
-	<property name="cdr.manifest.file" value="${basedir}/manifest-cdr.mf" />
-	<property name="producers.manifest.file" value="${basedir}/manifest-producers.mf" />
-	<property name="monitor.manifest.file" value="${basedir}/manifest-monitor.mf" />
+	<property name="manifest.file" value="${basedir}/manifest.mf" />
 
 	<property name="src.dir" location="${basedir}/src/main/java" />
 
@@ -90,46 +82,14 @@
 		</copy>
 	</target>
 
-	<target name="tac-jar" depends="copy" description="Build the JAR file" >
-		<jar jarfile="${dist.dir}/${tac.dist.jar}" manifest="${tac.manifest.file}" >
+	<target name="jar" depends="copy" description="Build the JAR file" >
+		<jar jarfile="${dist.dir}/${dist.jar}" manifest="${manifest.file}" >
 			<fileset dir="${build.dir}">
 				<include name="**/*.class"/>
 			</fileset>
 		</jar>
 	</target>
 
-	<target name="subscriber-jar" depends="tac-jar" description="Build the JAR file" >
-		<jar jarfile="${dist.dir}/${subscriber.dist.jar}" manifest="${subscriber.manifest.file}" >
-			<fileset dir="${build.dir}">
-				<include name="**/*.class"/>
-			</fileset>
-		</jar>
-	</target>
-
-	<target name="cdr-jar" depends="subscriber-jar" description="Build the JAR file" >
-		<jar jarfile="${dist.dir}/${cdr.dist.jar}" manifest="${cdr.manifest.file}" >
-			<fileset dir="${build.dir}">
-				<include name="**/*.class"/>
-			</fileset>
-		</jar>
-	</target>
-
-	<target name="producers-jar" depends="cdr-jar" description="Build the JAR file" >
-		<jar jarfile="${dist.dir}/${producers.dist.jar}" manifest="${producers.manifest.file}" >
-			<fileset dir="${build.dir}">
-				<include name="**/*.class"/>
-			</fileset>
-		</jar>
-	</target>
-
-	<target name="monitor-jar" depends="producers-jar" description="Build the JAR file" >
-		<jar jarfile="${dist.dir}/${monitor.dist.jar}" manifest="${monitor.manifest.file}" >
-			<fileset dir="${build.dir}">
-				<include name="**/*.class"/>
-			</fileset>
-		</jar>
-	</target>
-
-	<target name="deploy" depends="monitor-jar" />
+	<target name="deploy" depends="jar" />
 </project>
 
