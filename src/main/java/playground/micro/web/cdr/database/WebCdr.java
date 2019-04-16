@@ -2,6 +2,9 @@ package playground.micro.web.cdr.database;
 
 import java.util.List;
 
+import hba.gc.GcEvent;
+import hba.gc.GcEventListener;
+import hba.gc.GcEventLogger;
 import hba.tuples.Pair;
 import io.javalin.BadRequestResponse;
 import io.javalin.Javalin;
@@ -9,13 +12,17 @@ import io.javalin.Javalin;
 import playground.micro.models.CDR;
 import playground.micro.models.MonitorMetric;
 
-public class WebCdr {
+public class WebCdr implements GcEventListener {
 	static final String WEB_TIME = "CDR_WEB_TIME";
 	static final int WEB_TIME_DURATION = 60000;
 	Javalin app;
 	String name;
+	GcEventLogger gcEventLogger;
 
 	public WebCdr(int port, String name) {
+		gcEventLogger = new GcEventLogger();
+		gcEventLogger.start(this);
+		
 		this.name = name;
 		
 		app = Javalin.create();
@@ -42,6 +49,10 @@ public class WebCdr {
 		app.get("/micro/metic", ctx -> {
 			MonitorMetric metric = new MonitorMetric().setName(name);
 			ctx.json(metric);
+		});
+		
+		app.get("/micro/gc", ctx -> {
+			ctx.json(gcEventLogger.getLogs());
 		});
 
 		
@@ -77,7 +88,12 @@ public class WebCdr {
 		return cdr;
 	}
 	
-	public void close() {}
+	public void close() {
+		gcEventLogger.stop();
+	}
+
+	@Override
+	public void onComplete(GcEvent event) {}
 	
 	
 	public static void main(String[] args) {

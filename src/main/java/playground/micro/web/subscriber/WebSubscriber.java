@@ -92,15 +92,15 @@ public class WebSubscriber implements GcEventListener {
 		app.get("/micro/exception", ctx -> {throw new BadRequestResponse("ERROR: Provoked by GET");});
 	}
 	
-	public void close() {}
+	public void close() {
+		gcEventLogger.stop();
+	}
 	
 	public void setSimulateSlowResponse(boolean simulate) {simulateSlowResponse = simulate;}
 	
 	
 	@Override
-	public void onComplete(GcEvent event) {
-		System.out.println("GC");
-	}
+	public void onComplete(GcEvent event) {}
 	
 	
 	

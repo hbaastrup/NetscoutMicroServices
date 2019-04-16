@@ -2,16 +2,23 @@ package playground.micro.web.monitor;
 
 import java.util.List;
 
+import hba.gc.GcEvent;
+import hba.gc.GcEventListener;
+import hba.gc.GcEventLogger;
 import io.javalin.Javalin;
 import playground.micro.models.EnpointStatus;
 import playground.micro.monitor.Monitor;
 
-public class WebMonitor {
+public class WebMonitor implements GcEventListener {
 	Javalin app;
 	String name;
 	Monitor monitor;
+	GcEventLogger gcEventLogger;
 	
 	public WebMonitor(int port, String name, Monitor monitor) {
+		gcEventLogger = new GcEventLogger();
+		gcEventLogger.start(this);
+		
 		this.name = name;
 		this.monitor = monitor;
 		
@@ -29,7 +36,15 @@ public class WebMonitor {
 			ctx.result(name);
 		});
 		
+		app.get("/micro/gc", ctx -> {
+			ctx.json(gcEventLogger.getLogs());
+		});
 	}
 	
-	public void close() {}
+	public void close() {
+		gcEventLogger.stop();
+	}
+
+	@Override
+	public void onComplete(GcEvent event) {}
 }

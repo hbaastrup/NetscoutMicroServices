@@ -3,18 +3,26 @@ package playground.micro.web.tac;
 import java.io.File;
 import java.util.List;
 
+import hba.gc.GcEvent;
+import hba.gc.GcEventListener;
+import hba.gc.GcEventLogger;
 import io.javalin.BadRequestResponse;
 import io.javalin.Javalin;
 import playground.micro.models.MonitorMetric;
 import playground.micro.models.TAC;
 import playground.micro.models.TACArray;
 
-public class WebTAC {
+public class WebTAC implements GcEventListener {
 	Javalin app;
 	String name;
 	TACCache cache = new TACCache();
 	
+	GcEventLogger gcEventLogger;
+	
 	public WebTAC(int port, String name, TACCache cache) {
+		gcEventLogger = new GcEventLogger();
+		gcEventLogger.start(this);
+		
 		this.name = name;
 		this.cache = cache;
 		app = Javalin.create();
@@ -43,11 +51,21 @@ public class WebTAC {
 			ctx.json(metric);
 		});
 		
+		app.get("/micro/gc", ctx -> {
+			ctx.json(gcEventLogger.getLogs());
+		});
+		
 		app.get("/micro/fail", ctx -> ctx.status(401).json("'err':'Unauthorized'"));
 		app.get("/micro/exception", ctx -> {throw new BadRequestResponse("ERROR: Provoked by GET");});
 	}
 	
-	public void close() {}
+	public void close() {
+		gcEventLogger.stop();
+	}
+	
+	
+	@Override
+	public void onComplete(GcEvent event) {}
 	
 	
 	public static void main(String[] args) throws Exception {
