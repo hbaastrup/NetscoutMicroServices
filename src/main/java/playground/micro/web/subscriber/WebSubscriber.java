@@ -56,9 +56,12 @@ public class WebSubscriber implements GcEventListener {
 			MonitorMetric metric = new MonitorMetric().setName(name);
 			List<CommandMetricsHolder> mitricList = CommandMetricsHolder.instanceHystrixCommandMetricsList(controller.getTimeout());
 			metric.setCommandMetrics(mitricList);
-			metric.setGcEvents(gcEventLogger.getLogs());;
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json(metric);
+		});
+		
+		app.get("/micro/gc", ctx -> {
+			ctx.json(gcEventLogger.getLogs());
 		});
 		
 		app.post("/micro/sub/time/:calling/:time", ctx -> {
@@ -95,14 +98,16 @@ public class WebSubscriber implements GcEventListener {
 	
 	
 	@Override
-	public void onComplete(GcEvent event) {}
+	public void onComplete(GcEvent event) {
+		System.out.println("GC");
+	}
 	
 	
 	
 	public static void main(String[] args) throws Exception {
 		int port = 10082;
 		String name = WebSubscriber.class.getName();
-		String tacEndpoint = "http://localhost:10080";
+		String tacEndpoint = "http://localhost:10081";
 		boolean simulateSlowResponse = false;
 		
 		for (int i=0; i<args.length; i++) {

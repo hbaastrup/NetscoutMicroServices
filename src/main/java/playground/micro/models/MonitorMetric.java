@@ -13,7 +13,6 @@ public class MonitorMetric {
 	long timestamp = System.currentTimeMillis();
 	HashMap<String, CommandMetricsHolder> commandMetrics = new HashMap<>();
 	HashMap<String, Object> otherParameters = new HashMap<>();
-	List<GcEvent> gcEvents = null;
 	
 	public String getName() {return name;}
 	public MonitorMetric setName(String name) {this.name = name; return this;}
@@ -30,9 +29,6 @@ public class MonitorMetric {
 	}
 	
 	public Map<String, Object> getOtherParameters() {return otherParameters;}
-	
-	public List<GcEvent> getGcEvents() {return gcEvents;}
-	public void setGcEvents(List<GcEvent> events) {gcEvents = events;}
 	
 	public MonitorMetric setCommandMetrics(List<CommandMetricsHolder> list) {
 		for (CommandMetricsHolder h : list) {
