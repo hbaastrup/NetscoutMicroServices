@@ -84,7 +84,7 @@ public class Monitor implements Runnable {
 	
 	
 	public static void main(String[] args) {
-		int port = 10090;
+		int port = 10085;
 		String name = WebMonitor.class.getName();
 		long pollTime = 5000;
 		String[] endpoints = {"http://localhost:10080","http://localhost:10081","http://localhost:10082","http://localhost:10083"};

@@ -124,7 +124,7 @@ public class CdrProducer implements Runnable {
 	
 	
 	public static void main(String[] args) {
-		int port = 10083;
+		int port = 10084;
 		String name = CdrProducerWeb.class.getName();
 		String subscriberEndpoint = "http://localhost:10081";
 		String cdrEndpoint = "http://localhost:10082";

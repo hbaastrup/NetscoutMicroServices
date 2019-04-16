@@ -81,7 +81,7 @@ public class WebCdr {
 	
 	
 	public static void main(String[] args) {
-		int port = 10082;
+		int port = 10083;
 		String name = WebCdr.class.getName();
 		
 		for (int i=0; i<args.length; i++) {

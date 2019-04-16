@@ -3,13 +3,16 @@ package playground.micro.web.subscriber;
 import java.util.List;
 import java.util.Random;
 
+import hba.gc.GcEvent;
+import hba.gc.GcEventListener;
+import hba.gc.GcEventLogger;
 import io.javalin.BadRequestResponse;
 import io.javalin.Javalin;
 import playground.micro.models.CommandMetricsHolder;
 import playground.micro.models.MonitorMetric;
 import playground.micro.models.Subscriber;
 
-public class WebSubscriber {
+public class WebSubscriber implements GcEventListener {
 	Javalin app;
 	String name;
 	SubscriberCacheController controller;
@@ -18,7 +21,11 @@ public class WebSubscriber {
 	long stdDevProssingTime = 600; //in milliseconds
 	boolean simulateSlowResponse = false;
 	
+	GcEventLogger gcEventLogger;
+	
 	public WebSubscriber(int port, String name, String tacServiceUrl) {
+		gcEventLogger = new GcEventLogger();
+		gcEventLogger.start(this);
 		this.name = name;
 		controller = new SubscriberCacheController(tacServiceUrl);
 		
@@ -49,6 +56,7 @@ public class WebSubscriber {
 			MonitorMetric metric = new MonitorMetric().setName(name);
 			List<CommandMetricsHolder> mitricList = CommandMetricsHolder.instanceHystrixCommandMetricsList(controller.getTimeout());
 			metric.setCommandMetrics(mitricList);
+			metric.setGcEvents(gcEventLogger.getLogs());;
 			ctx.res.setHeader("Access-Control-Allow-Origin", "*");
 			ctx.json(metric);
 		});
@@ -86,8 +94,13 @@ public class WebSubscriber {
 	public void setSimulateSlowResponse(boolean simulate) {simulateSlowResponse = simulate;}
 	
 	
+	@Override
+	public void onComplete(GcEvent event) {}
+	
+	
+	
 	public static void main(String[] args) throws Exception {
-		int port = 10081;
+		int port = 10082;
 		String name = WebSubscriber.class.getName();
 		String tacEndpoint = "http://localhost:10080";
 		boolean simulateSlowResponse = false;
@@ -125,4 +138,5 @@ public class WebSubscriber {
 			}
 		});
 	}
+
 }

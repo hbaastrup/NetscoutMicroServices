@@ -140,7 +140,7 @@ public class SimpleOrchestrator {
 	
 	
 	public static void main(String[] args) throws Exception {
-		int port = 10090;
+		int port = 10080;
 		String name = SimpleOrchestrator.class.getName();
 		String javaCmd = "/opt/java/bin/java";
 		String configFilename = "config.json";
