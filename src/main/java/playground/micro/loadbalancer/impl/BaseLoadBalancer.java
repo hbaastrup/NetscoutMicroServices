@@ -42,7 +42,7 @@ public class BaseLoadBalancer implements ILoadBalancer {
 	
 	public BaseLoadBalancer(IServerRule rule, IServerPing ping) {
 		setRule(rule);
-		serverPing = ping;
+		setPing(ping);
 	}
 	
     public void setRule(IServerRule rule) {
@@ -78,6 +78,11 @@ public class BaseLoadBalancer implements ILoadBalancer {
     @Override
     public List<Server> getAllServers() {
         return Collections.unmodifiableList(fullServerList);
+    }
+    
+    @Override
+    public Server choose() {
+    	return serverRule.choose(this, null);
     }
 
     
